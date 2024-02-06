@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+    <head>
+        <link href="./css/style.css" rel="stylesheet"/>
+        <script src="./js/script.js" type="text/javascript"></script>
+    </head>
+    <body>
+        
+        <!--
+        <input type='file' accept='text/plain' onchange='openFile(event)'>
+
+        <div id='output'>
+            ...
+        </div>
+        -->
+
+        <input type="file" onchange="readFile()" /><br />
+        <div class="content">
+            
+        </div>
+        <ul class="creature-list list-unstyled" id="creature-list">
+            <li>
+                <div class="creature">
+                    <div class="creature__initiative">Initiative</div>
+                    <div class="creature__name">Name</div>
+                    <div class="creature__ac">AC</div>
+                    <div class="creature__hp">HP</div>
+                    <div class="creature__buttons"></div>
+                </div>
+            </li>
+        </ul>
+        <form id="form-creature-new">
+            <div class="creature" id="creature-new">
+                <div class="creature__initiative">
+                    <input name="initiative" type="number" placeholder="10">
+                </div>
+                <div class="creature__name">
+                    <input name="name" placeholder="Name">
+                </div>
+                <div class="creature__hp">
+                    <input name="hpMax" type="number" placeholder="10">
+                </div>
+                <div class="creature__ac">
+                    <input name="ac" type="number" placeholder="10">
+                </div>
+                <div class="creature__buttons">
+                    <input type="submit" value="+">
+                </div>
+            </div>
+        </form>
+    </body>
+</html>

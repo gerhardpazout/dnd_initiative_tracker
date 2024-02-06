@@ -1,0 +1,35 @@
+.list-unstyled {
+    list-style-type: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.creature {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+}
+
+.creature > div {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+
+.creature__initiative,
+.creature__ac,
+.creature__hp,
+.creature__buttons
+ { 
+    width: 10%;
+    min-width: 2em;
+    max-width: 50px;
+}
+
+.creature__name { 
+    width: 40%;
+}
+
+form#form-creature-new input {
+    width: 100%;
+}
