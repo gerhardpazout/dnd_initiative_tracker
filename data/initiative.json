@@ -6,7 +6,8 @@
             "damaged": 2,
             "ac": 15,
             "isPlayer": true,
-            "initiative": 17
+            "initiative": 17,
+            "current": false
         },
         {
             "name": "Ladyium",
@@ -14,7 +15,8 @@
             "damaged": 6,
             "ac": 14,
             "isPlayer": true,
-            "initiative": 6
+            "initiative": 6,
+            "current": true
         },
         {
             "name": "Bandit",
@@ -22,7 +24,8 @@
             "damaged": 2,
             "ac": null,
             "isPlayer": false,
-            "initiative": 15
+            "initiative": 15,
+            "current": false
         }
     ]
 }

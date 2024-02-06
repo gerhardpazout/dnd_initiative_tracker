@@ -10,6 +10,9 @@
     align-items: center;
     width: 100%;
 }
+.creature[data-current="true"] {
+    color: red;
+}
 
 .creature > div {
     padding-left: 0.5rem;

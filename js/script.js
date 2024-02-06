@@ -74,6 +74,9 @@ class CreatureList {
         this.creatures = json.creatures;
         this.el = document.getElementById('creature-list');
         this.formNew = document.getElementById('form-creature-new');
+        this.prevTurn =  document.getElementById('tracker-prev-turn');
+        this.nextTurn =  document.getElementById('tracker-next-turn');
+        this.current = 0;
         console.log(this.creatures);
     }
 
@@ -87,6 +90,16 @@ class CreatureList {
             console.log(submittedData);
             var creatureNew = that.mapArrayToCreature(submittedData);
             that.addCreature(creatureNew);
+        });
+
+        this.nextTurn.addEventListener("click", function(e) {
+            console.log("next clicked!");
+            console.log(that.incrementTurn());
+        });
+
+        this.prevTurn.addEventListener("click", function(e) {
+            console.log("prev clicked!");
+            console.log(that.decrementTurn());
         });
 
         this.render()
@@ -103,8 +116,6 @@ class CreatureList {
         console.log(this.el);
         for (var i = 0; i <= this.creatures.length-1; i++) {
             var creature = this.creatures[i];
-            console.log("about to generate html for:");
-            console.log(creature);
             var li = this.generateHtmlForCreature(creature);
             this.el.appendChild(li);
         }
@@ -115,7 +126,7 @@ class CreatureList {
         var hp = (creature.isPlayer)? creature.hpMax - creature.damaged : creature.damaged;
         var ac = (creature.isPlayer)? creature.ac : '';
         li.innerHTML = 
-        '<div class="creature">' + 
+        '<div class="creature" data-current="' + creature.current + '">' + 
             '<div class="creature__initiative">' + creature.initiative + '</div>' +
             '<div class="creature__name">' + creature.name + '</div>' +
             '<div class="creature__hp">' + hp + '</div>' +
@@ -135,6 +146,7 @@ class CreatureList {
         var hpMax = parseInt(array['hpMax']);
         var ac = parseInt(array['ac']);
         var initiative = parseInt(array['initiative']);
+        var current = false
 
         return new Creature(name, ac, hpMax, initiative);
     }
@@ -143,6 +155,34 @@ class CreatureList {
         this.creatures.push(creature.json());
         this.sort();
         console.log(this.creatures);
+        this.update();
+    }
+
+    getIndexOfCurrentCreature(){
+        var index = this.creatures.findIndex(function (creature) {
+            return creature.current === true;
+        });
+
+        return index;
+    }
+
+    incrementTurn(){
+        var index = this.getIndexOfCurrentCreature();
+        this.creatures[index].current = false;
+        if(++index >= this.creatures.length) {
+            index = 0;
+        }
+        this.creatures[index].current = true;
+        this.update();
+    }
+
+    decrementTurn(){
+        var index = this.getIndexOfCurrentCreature();
+        this.creatures[index].current = false;
+        if(--index < 0) {
+            index = this.creatures.length - 1;
+        }
+        this.creatures[index].current = true;
         this.update();
     }
 
@@ -166,7 +206,8 @@ class Creature {
         this.damaged = 0
         this.hpMax = hpMax;
         this.initiative = initiative;
-        this.isPlayer = false
+        this.isPlayer = false,
+        this.current = false
     }
 
     json() {
@@ -176,7 +217,8 @@ class Creature {
             "damaged": this.damaged,
             "ac": this.ac,
             "isPlayer": this.isPlayer,
-            "initiative": this.initiative
+            "initiative": this.initiative,
+            "current": this.current
         }
     }
 }
