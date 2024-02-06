@@ -20,11 +20,27 @@
         <ul class="creature-list list-unstyled" id="creature-list">
             <li>
                 <div class="creature" data-current="false">
-                    <div class="creature__initiative">Initiative</div>
-                    <div class="creature__name">Name</div>
-                    <div class="creature__ac">AC</div>
-                    <div class="creature__hp">HP</div>
-                    <div class="creature__buttons"></div>
+                    <div class="creature__initiative">
+                        <span>Initiative</span>
+                        <div class="edit">
+                            <input name="initiative" type="number" placeholder="10">
+                        </div>
+                    </div>
+                    <div class="creature__name">
+                        <span>Name</span>
+                    </div>
+                    <div class="creature__ac">
+                        <span>AC</span>
+                    </div>
+                    <div class="creature__hp">
+                        <span>HP</span>
+                    </div>
+                    <div class="creature__buttons">
+                        <span>Action</span>
+                        <div class="edit">
+                            <button class="creature__edit">edit</button>
+                        </div>
+                    </div>
                 </div>
             </li>
         </ul>

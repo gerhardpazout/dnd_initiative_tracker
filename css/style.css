@@ -7,7 +7,7 @@
 .creature {
     display: flex;
     flex-direction: row;
-    align-items: center;
+    align-items: flex-start;
     width: 100%;
 }
 .creature[data-current="true"] {
@@ -17,6 +17,14 @@
 .creature > div {
     padding-left: 0.5rem;
     padding-right: 0.5rem;
+
+    display: flex;
+    flex-direction: column;
+}
+.creature > div .edit,
+.creature > div .edit input 
+{ 
+    width: 100%;
 }
 
 .creature__initiative,

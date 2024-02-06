@@ -93,35 +93,36 @@ class CreatureList {
         });
 
         this.nextTurn.addEventListener("click", function(e) {
-            console.log("next clicked!");
-            console.log(that.incrementTurn());
+            that.incrementTurn();
         });
 
         this.prevTurn.addEventListener("click", function(e) {
-            console.log("prev clicked!");
-            console.log(that.decrementTurn());
+            that.decrementTurn();
+        });
+        
+        document.addEventListener("click", function(e){
+            if(e.target.className == 'creature__edit' ) {
+                that.editCreature(e.target.getAttribute("data-index"));
+            };
         });
 
         this.render()
     }
 
     update() {
-        console.log("updating CreatureList");
         this.el.innerHTML = '';
         this.render();
     }
 
     render() {
-        console.log("CreatureList::render()");
-        console.log(this.el);
         for (var i = 0; i <= this.creatures.length-1; i++) {
             var creature = this.creatures[i];
-            var li = this.generateHtmlForCreature(creature);
+            var li = this.generateHtmlForCreature(creature, i);
             this.el.appendChild(li);
         }
     }
 
-    generateHtmlForCreature(creature) {
+    generateHtmlForCreature(creature, index) {
         var li = document.createElement('li');
         var hp = (creature.isPlayer)? creature.hpMax - creature.damaged : creature.damaged;
         var ac = (creature.isPlayer)? creature.ac : '';
@@ -130,7 +131,10 @@ class CreatureList {
             '<div class="creature__initiative">' + creature.initiative + '</div>' +
             '<div class="creature__name">' + creature.name + '</div>' +
             '<div class="creature__hp">' + hp + '</div>' +
-            '<div class="creature__hp">' + ac + '</div>' +
+            '<div class="creature__ac">' + ac + '</div>' +
+            '<div class="creature__buttons">' + 
+                '<button class="creature__edit" data-index="' + index + '">edit</button>' + 
+            '</div>' +
         '</div>'
         return li;
     }
@@ -146,7 +150,7 @@ class CreatureList {
         var hpMax = parseInt(array['hpMax']);
         var ac = parseInt(array['ac']);
         var initiative = parseInt(array['initiative']);
-        var current = false
+        var current = false;
 
         return new Creature(name, ac, hpMax, initiative);
     }
@@ -154,8 +158,13 @@ class CreatureList {
     addCreature(creature){
         this.creatures.push(creature.json());
         this.sort();
-        console.log(this.creatures);
         this.update();
+    }
+
+    editCreature(index) {
+        console.log('editCreature:')
+        var creature = this.creatures[index];
+        console.log(creature);
     }
 
     getIndexOfCurrentCreature(){
