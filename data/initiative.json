@@ -22,7 +22,7 @@
             "name": "Bandit",
             "hpMax": null,
             "damaged": 2,
-            "ac": null,
+            "ac": 12,
             "isPlayer": false,
             "initiative": 15,
             "current": false

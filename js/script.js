@@ -74,6 +74,7 @@ class CreatureList {
         this.creatures = json.creatures;
         this.el = document.getElementById('creature-list');
         this.formNew = document.getElementById('form-creature-new');
+        this.formEdit = document.getElementById('form-creature-edit');
         this.prevTurn =  document.getElementById('tracker-prev-turn');
         this.nextTurn =  document.getElementById('tracker-next-turn');
         this.current = 0;
@@ -92,6 +93,16 @@ class CreatureList {
             that.addCreature(creatureNew);
         });
 
+        this.formEdit.addEventListener("submit", function(evt) {
+            evt.preventDefault();
+            var submittedData = Object.fromEntries(new FormData(evt.target));
+            console.log(submittedData);
+            var index = submittedData['index'];
+            var creatureNew = that.mapArrayToCreature(submittedData);
+            that.editCreature(creatureNew, index);
+            that.clearEditForm();
+        });
+
         this.nextTurn.addEventListener("click", function(e) {
             that.incrementTurn();
         });
@@ -102,7 +113,7 @@ class CreatureList {
         
         document.addEventListener("click", function(e){
             if(e.target.className == 'creature__edit' ) {
-                that.editCreature(e.target.getAttribute("data-index"));
+                that.fillEditForm(e.target.getAttribute("data-index"));
             };
         });
 
@@ -112,6 +123,7 @@ class CreatureList {
     update() {
         this.el.innerHTML = '';
         this.render();
+        console.log(this.creatures);
     }
 
     render() {
@@ -148,11 +160,18 @@ class CreatureList {
     mapArrayToCreature(array){
         var name = array['name'];
         var hpMax = parseInt(array['hpMax']);
+        var damaged = parseInt(array['damaged']);
         var ac = parseInt(array['ac']);
         var initiative = parseInt(array['initiative']);
-        var current = false;
+        var current = (array['current'].toLowerCase() === 'true');
+        
+        var isPlayer = (array['isPlayer'])? (array['isPlayer'].toLowerCase() === 'true') : false;
 
-        return new Creature(name, ac, hpMax, initiative);
+        var creature = new Creature(name, ac, hpMax, initiative);
+        creature.setIsPlayer(isPlayer);
+        creature.setIsCurrent(current);
+        creature.setDamaged(damaged);
+        return creature;
     }
 
     addCreature(creature){
@@ -161,17 +180,43 @@ class CreatureList {
         this.update();
     }
 
-    editCreature(index) {
+    editCreature(creature, index){
+        this.creatures[index] = creature.json();
+        this.sort();
+        this.update();
+    }
+
+    fillEditForm(index) {
         console.log('editCreature:')
         var creature = this.creatures[index];
         console.log(creature);
+
+        this.formEdit.elements["index"].value = index;
+        this.formEdit.elements["initiative"].value = creature.initiative;
+        this.formEdit.elements["name"].value = creature.name;
+        this.formEdit.elements["hpMax"].value = creature.hpMax;
+        this.formEdit.elements["damaged"].value = creature.damaged;
+        this.formEdit.elements["ac"].value = creature.ac;
+        this.formEdit.elements["isPlayer"].checked = creature.isPlayer;
+        this.formEdit.elements["current"].value = creature.current;
+    }
+
+    clearEditForm(){
+        this.formEdit.elements["index"].value = '';
+        this.formEdit.elements["initiative"].value = '';
+        this.formEdit.elements["name"].value = '';
+        this.formEdit.elements["hpMax"].value = '';
+        this.formEdit.elements["damaged"].value = '';
+        this.formEdit.elements["ac"].value = '';
+        this.formEdit.elements["isPlayer"].checked = false;
+        this.formEdit.elements["current"].value = false;
     }
 
     getIndexOfCurrentCreature(){
         var index = this.creatures.findIndex(function (creature) {
             return creature.current === true;
         });
-
+        if(index === -1) return 0;
         return index;
     }
 
@@ -217,6 +262,18 @@ class Creature {
         this.initiative = initiative;
         this.isPlayer = false,
         this.current = false
+    }
+
+    setIsPlayer(isPlayer) {
+        this.isPlayer = isPlayer;
+    }
+
+    setIsCurrent(current) {
+        this.current = current;
+    }
+
+    setDamaged(damaged) {
+        this.damaged = damaged;
     }
 
     json() {

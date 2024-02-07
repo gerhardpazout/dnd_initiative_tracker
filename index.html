@@ -17,35 +17,34 @@
         <div class="content">
             
         </div>
+
+        <div class="creature creature-legend">
+            <div class="creature__initiative">
+                <span>Initiative</span>
+            </div>
+            <div class="creature__name">
+                <span>Name</span>
+            </div>
+            <div class="creature__ac">
+                <span>AC</span>
+            </div>
+            <div class="creature__hp">
+                <span>HP</span>
+            </div>
+            <div class="creature__buttons">
+                <span>Action</span>
+                <!--
+                    <div class="edit">
+                        <button class="creature__edit">edit</button>
+                    </div>
+                -->
+            </div>
+        </div>
         <ul class="creature-list list-unstyled" id="creature-list">
-            <li>
-                <div class="creature" data-current="false">
-                    <div class="creature__initiative">
-                        <span>Initiative</span>
-                        <div class="edit">
-                            <input name="initiative" type="number" placeholder="10">
-                        </div>
-                    </div>
-                    <div class="creature__name">
-                        <span>Name</span>
-                    </div>
-                    <div class="creature__ac">
-                        <span>AC</span>
-                    </div>
-                    <div class="creature__hp">
-                        <span>HP</span>
-                    </div>
-                    <div class="creature__buttons">
-                        <span>Action</span>
-                        <div class="edit">
-                            <button class="creature__edit">edit</button>
-                        </div>
-                    </div>
-                </div>
-            </li>
         </ul>
         <form id="form-creature-new">
             <div class="creature" id="creature-new">
+                <input type="hidden" name="damaged" value="0">
                 <div class="creature__initiative">
                     <input name="initiative" type="number" placeholder="10">
                 </div>
@@ -65,5 +64,38 @@
         </form>
         <button id="tracker-prev-turn">Previous Turn</button>
         <button id="tracker-next-turn">Next Turn</button>
+
+        <br>
+        <br>
+        <form id="form-creature-edit">
+            <div class="creature" id="creature-edit">
+                <input type="hidden" name="index" value="0">
+                <input type="hidden" name="current" value="false">
+                <input type="hidden" name="damaged" value="0">
+                <div class="creature__initiative">
+                    <input name="initiative" type="number" placeholder="10">
+                </div>
+                <div class="creature__name">
+                    <input name="name" placeholder="Name">
+                </div>
+                <div class="creature__hp">
+                    <input name="hpMax" type="number" placeholder="10">
+                </div>
+                <div class="creature__ac">
+                    <input name="ac" type="number" placeholder="10">
+                </div>
+                <div class="creature__isPlayer">
+                    <input
+                        type="checkbox"
+                        id="isPlayer"
+                        name="isPlayer"
+                        value="true"/>
+                    <label for="isPlayer">is player?</label>
+                </div>
+                <div class="creature__buttons">
+                    <input type="submit" value="save">
+                </div>
+            </div>
+        </form>
     </body>
 </html>
