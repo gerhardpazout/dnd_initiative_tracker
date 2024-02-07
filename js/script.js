@@ -103,17 +103,18 @@ class CreatureList {
             var action = evt.submitter.value;
             var submittedData = Object.fromEntries(new FormData(evt.target));
             var index = submittedData['index'];
-            var creatureNew = that.mapArrayToCreature(submittedData); // build updated creature from submitted data
+            if(index !== '') {
+                var creatureNew = that.mapArrayToCreature(submittedData); // build updated creature from submitted data
 
-            console.log(submittedData);
-
-            switch(action) {
-                case "save":
-                    that.editCreature(creatureNew, index); // override creature in this.creatures
-                    break;
-                case "delete":
-                    that.deleteCreature(index);
-                    break;
+                console.log(submittedData);
+                switch(action) {
+                    case "save":
+                        that.editCreature(creatureNew, index); // override creature in this.creatures
+                        break;
+                    case "delete":
+                        that.deleteCreature(index);
+                        break;
+                }
             }
             
             that.clearEditForm();
