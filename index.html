@@ -80,38 +80,42 @@
         <br>
         <br>
         <form id="form-creature-edit">
-            <div class="creature" id="creature-edit">
-                <input type="hidden" name="index" value="0">
+            <div class="creature-edit" id="creature-edit">
+                <h2>Edit Creature:</h2>
+                <input type="hidden" name="index" value="">
                 <input type="hidden" name="current" value="false">
                 <input type="hidden" name="damaged" value="0">
-                <div class="creature__initiative">
-                    <input name="initiative" type="number" placeholder="10">
+                <div class="form-group creature__initiative">
+                    <label for="creature-edit__initiative">Initiative: </label>
+                    <input name="initiative" type="number" placeholder="10" id="creature-edit__initiative" class="form-control">
                 </div>
-                <div class="creature__name">
-                    <input name="name" placeholder="Name">
+                <div class="form-group creature__name">
+                    <label for="creature-edit__name">Name: </label>
+                    <input name="name" placeholder="Name" id="creature-edit__name" class="form-control">
                 </div>
-                <div class="creature__hp">
-                    <input name="hp" type="number" placeholder="10">
+                <div class="form-group creature__hp">
+                    <label for="creature-edit__hp">HP: </label>
+                    <input name="hp" type="number" placeholder="10" id="creature-edit__hp" class="form-control">
                 </div>
-                <div class="creature__hp">
-                    <input name="hpMax" type="number" placeholder="10">
+                <div class="form-group creature__hp">
+                    <label for="creature-edit__hpMax">Max. HP: </label>
+                    <input name="hpMax" type="number" placeholder="10" id="creature-edit__hpMax" class="form-control">
                 </div>
-                <div class="creature__ac">
-                    <input name="ac" type="number" placeholder="10">
+                <div class="form-group creature__ac">
+                    <label for="creature-edit__ac">AC:</label>
+                    <input name="ac" type="number" placeholder="10" id="creature-edit__ac" class="form-control">
                 </div>
-                <div class="creature__isPlayer">
+                <div class="form-group creature__isPlayer">
                     <input
                         type="checkbox"
-                        id="isPlayer"
+                        id="creature-edit__isPlayer"
                         name="isPlayer"
                         value="true"/>
-                    <label for="isPlayer">is player?</label>
+                    <label for="creature-edit__isPlayer">is player?</label>
                 </div>
                 <div class="creature__buttons">
-                    <input type="submit" name="action" value="save">
-                </div>
-                <div class="creature__buttons">
-                    <input type="submit" name="action" value="delete">
+                    <input type="submit" name="action" value="save" class="btn btn-success">
+                    <input type="submit" name="action" value="delete" class="btn btn-danger">
                 </div>
             </div>
         </form>
