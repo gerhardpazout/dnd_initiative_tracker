@@ -25,11 +25,11 @@
             <div class="creature__name">
                 <span>Name</span>
             </div>
-            <div class="creature__ac">
-                <span>AC</span>
-            </div>
             <div class="creature__hp">
                 <span>HP</span>
+            </div>
+            <div class="creature__ac">
+                <span>AC</span>
             </div>
             <div class="creature__buttons">
                 <span>Action</span>
@@ -44,6 +44,7 @@
         </ul>
         <form id="form-creature-new">
             <div class="creature" id="creature-new">
+                <input type="hidden" name="current" value="false">
                 <input type="hidden" name="damaged" value="0">
                 <div class="creature__initiative">
                     <input name="initiative" type="number" placeholder="10">
