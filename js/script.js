@@ -117,6 +117,8 @@ class CreatureList {
             };
         });
 
+        this.initKeys();
+
         this.render()
     }
 
@@ -238,6 +240,17 @@ class CreatureList {
         }
         this.creatures[index].current = true;
         this.update();
+    }
+
+    initKeys(){
+        var that = this;
+        document.addEventListener("keydown", function(e){
+            if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+                that.incrementTurn();
+            } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+                that.decrementTurn();
+            }
+        });
     }
 
     /*
