@@ -84,6 +84,8 @@ class CreatureList {
     init() {
         this.sort()
         var that = this;
+
+        // Process 'new' form
         this.formNew.addEventListener("submit", function(evt) {
             evt.preventDefault();
             // code from https://stackoverflow.com/questions/23139876/getting-all-form-values-by-javascript
@@ -93,24 +95,41 @@ class CreatureList {
             that.addCreature(creatureNew);
         });
 
+        // Process 'edit' form
         this.formEdit.addEventListener("submit", function(evt) {
             evt.preventDefault();
+
+            // code from https://stackoverflow.com/questions/15495820/identify-the-value-of-clicked-submit-button-with-multiple-submit-buttons
+            var action = evt.submitter.value;
             var submittedData = Object.fromEntries(new FormData(evt.target));
-            console.log(submittedData);
             var index = submittedData['index'];
-            var creatureNew = that.mapArrayToCreature(submittedData);
-            that.editCreature(creatureNew, index);
+            var creatureNew = that.mapArrayToCreature(submittedData); // build updated creature from submitted data
+
+            console.log(submittedData);
+
+            switch(action) {
+                case "save":
+                    that.editCreature(creatureNew, index); // override creature in this.creatures
+                    break;
+                case "delete":
+                    that.deleteCreature(index);
+                    break;
+            }
+            
             that.clearEditForm();
         });
 
+        // Next turn
         this.nextTurn.addEventListener("click", function(e) {
             that.incrementTurn();
         });
 
+        // Previous turn
         this.prevTurn.addEventListener("click", function(e) {
             that.decrementTurn();
         });
         
+        // Button for editing creature (fill 'edit' form)
         document.addEventListener("click", function(e){
             if(e.target.className == 'creature__edit' ) {
                 that.fillEditForm(e.target.getAttribute("data-index"));
@@ -141,7 +160,8 @@ class CreatureList {
         // var hp = (creature.isPlayer)? creature.hpMax - creature.damaged : creature.damaged;
         // var hp = (creature.isPlayer)? creature.hp : creature.hp;
         // var hpMax = (creature.isPlayer)? creature.hpMax : '';
-        var hpDisplay = (creature.isPlayer)? '' + creature.hp + '/' + creature.hpMax : creature.hp;
+        var hpMax = (creature.isPlayer && !isNaN(creature.hpMax))? creature.hpMax : '?';
+        var hpDisplay = (creature.isPlayer)? '' + creature.hp + '/' + hpMax : creature.hp;
         var ac = (creature.isPlayer)? creature.ac : '';
         li.innerHTML = 
         '<div class="creature" data-current="' + creature.current + '">' + 
@@ -188,6 +208,14 @@ class CreatureList {
 
     editCreature(creature, index){
         this.creatures[index] = creature.json();
+        this.sort();
+        this.update();
+    }
+
+    deleteCreature(index) {
+        console.log("deleteCreature(" + index + ")");
+        // to get removed item just add "var removed = " at beginning of next line.
+        this.creatures.splice(index, 1);
         this.sort();
         this.update();
     }
