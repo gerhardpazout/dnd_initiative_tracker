@@ -138,13 +138,16 @@ class CreatureList {
 
     generateHtmlForCreature(creature, index) {
         var li = document.createElement('li');
-        var hp = (creature.isPlayer)? creature.hpMax - creature.damaged : creature.damaged;
+        // var hp = (creature.isPlayer)? creature.hpMax - creature.damaged : creature.damaged;
+        // var hp = (creature.isPlayer)? creature.hp : creature.hp;
+        // var hpMax = (creature.isPlayer)? creature.hpMax : '';
+        var hpDisplay = (creature.isPlayer)? '' + creature.hp + '/' + creature.hpMax : creature.hp;
         var ac = (creature.isPlayer)? creature.ac : '';
         li.innerHTML = 
         '<div class="creature" data-current="' + creature.current + '">' + 
             '<div class="creature__initiative">' + creature.initiative + '</div>' +
             '<div class="creature__name">' + creature.name + '</div>' +
-            '<div class="creature__hp">' + hp + '</div>' +
+            '<div class="creature__hp">' + hpDisplay + '</div>' +
             '<div class="creature__ac">' + ac + '</div>' +
             '<div class="creature__buttons">' + 
                 '<button class="creature__edit" data-index="' + index + '">edit</button>' + 
@@ -161,6 +164,7 @@ class CreatureList {
 
     mapArrayToCreature(array){
         var name = array['name'];
+        var hp = parseInt(array['hp']);
         var hpMax = parseInt(array['hpMax']);
         var damaged = parseInt(array['damaged']);
         var ac = parseInt(array['ac']);
@@ -169,7 +173,7 @@ class CreatureList {
         
         var isPlayer = (array['isPlayer'])? (array['isPlayer'].toLowerCase() === 'true') : false;
 
-        var creature = new Creature(name, ac, hpMax, initiative);
+        var creature = new Creature(name, ac, hp, hpMax, initiative);
         creature.setIsPlayer(isPlayer);
         creature.setIsCurrent(current);
         creature.setDamaged(damaged);
@@ -196,6 +200,7 @@ class CreatureList {
         this.formEdit.elements["index"].value = index;
         this.formEdit.elements["initiative"].value = creature.initiative;
         this.formEdit.elements["name"].value = creature.name;
+        this.formEdit.elements["hp"].value = creature.hp;
         this.formEdit.elements["hpMax"].value = creature.hpMax;
         this.formEdit.elements["damaged"].value = creature.damaged;
         this.formEdit.elements["ac"].value = creature.ac;
@@ -207,6 +212,7 @@ class CreatureList {
         this.formEdit.elements["index"].value = '';
         this.formEdit.elements["initiative"].value = '';
         this.formEdit.elements["name"].value = '';
+        this.formEdit.elements["hp"].value = '';
         this.formEdit.elements["hpMax"].value = '';
         this.formEdit.elements["damaged"].value = '';
         this.formEdit.elements["ac"].value = '';
@@ -267,10 +273,11 @@ class CreatureList {
 }
 
 class Creature {
-    constructor(name, ac, hpMax, initiative) {
+    constructor(name, ac, hp, hpMax, initiative) {
         this.name = name;
         this.ac = ac;
-        this.damaged = 0
+        this.damaged = 0; // deprecated field, TODO: remove
+        this.hp = hp;
         this.hpMax = hpMax;
         this.initiative = initiative;
         this.isPlayer = false,
@@ -292,6 +299,7 @@ class Creature {
     json() {
         return {
             "name": this.name,
+            "hp": this.hp,
             "hpMax": this.hpMax,
             "damaged": this.damaged,
             "ac": this.ac,
