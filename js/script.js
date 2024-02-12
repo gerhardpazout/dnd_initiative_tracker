@@ -79,6 +79,7 @@ class CreatureList {
         this.nextTurn =  document.getElementById('tracker-next-turn');
         this.saveButton =  document.getElementById('tracker-save');
         this.loadButton =  document.getElementById('tracker-load');
+        this.editModal = new bootstrap.Modal(document.getElementById('edit-creature-modal'), {})
         this.current = 0;
         console.log(this.creatures);
     }
@@ -112,9 +113,11 @@ class CreatureList {
                 switch(action) {
                     case "save":
                         that.editCreature(creatureNew, index); // override creature in this.creatures
+                        that.editModal.hide();
                         break;
                     case "delete":
                         that.deleteCreature(index);
+                        that.editModal.hide();
                         break;
                 }
             }
@@ -134,8 +137,9 @@ class CreatureList {
         
         // Button for editing creature (fill 'edit' form)
         document.addEventListener("click", function(e){
-            if(e.target.className == 'creature__edit' ) {
+            if(e.target.className.includes('creature__edit') ) {
                 that.fillEditForm(e.target.getAttribute("data-index"));
+                that.editModal.show();
             };
         });
 

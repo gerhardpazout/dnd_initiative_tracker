@@ -62,6 +62,7 @@ form#form-creature-new input {
     /*width: 100%;*/
 }
 
+/*
 .creature-edit {
     width: 80%;
     max-width: 400px;
@@ -77,6 +78,7 @@ form#form-creature-new input {
 .creature-edit .creature__buttons input[type="submit"] {
     flex-basis: 100%;
 }
+*/
 
 form h2 {
     margin-top: 0;

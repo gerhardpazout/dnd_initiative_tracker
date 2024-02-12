@@ -87,47 +87,60 @@
         <button id="tracker-next-turn" class="btn btn-secondary">Next Turn</button>
     </div>
 
-        <br>
-        <br>
-        <form id="form-creature-edit">
-            <div class="creature-edit" id="creature-edit">
-                <h2>Edit Creature:</h2>
-                <input type="hidden" name="index" value="">
-                <input type="hidden" name="current" value="false">
-                <input type="hidden" name="damaged" value="0">
-                <div class="form-group creature__initiative">
-                    <label for="creature-edit__initiative">Initiative: </label>
-                    <input name="initiative" type="number" placeholder="10" id="creature-edit__initiative" class="form-control">
+        
+        <!-- Modal -->
+        <div class="modal fade" id="edit-creature-modal" tabindex="-1" aria-labelledby="edit-creature-modal-label" aria-hidden="true">
+            <div class="modal-dialog">
+                <form id="form-creature-edit">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="edit-creature-modal-label">Edit Creature</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                            <div class="creature-edit" id="creature-edit">
+                                <input type="hidden" name="index" value="">
+                                <input type="hidden" name="current" value="false">
+                                <input type="hidden" name="damaged" value="0">
+                                <div class="form-group creature__initiative">
+                                    <label for="creature-edit__initiative">Initiative: </label>
+                                    <input name="initiative" type="number" placeholder="10" id="creature-edit__initiative" class="form-control">
+                                </div>
+                                <div class="form-group creature__name">
+                                    <label for="creature-edit__name">Name: </label>
+                                    <input name="name" placeholder="Name" id="creature-edit__name" class="form-control">
+                                </div>
+                                <div class="form-group creature__hp">
+                                    <label for="creature-edit__hp">HP: </label>
+                                    <input name="hp" type="number" placeholder="10" id="creature-edit__hp" class="form-control">
+                                </div>
+                                <div class="form-group creature__hp">
+                                    <label for="creature-edit__hpMax">Max. HP: </label>
+                                    <input name="hpMax" type="number" placeholder="10" id="creature-edit__hpMax" class="form-control">
+                                </div>
+                                <div class="form-group creature__ac">
+                                    <label for="creature-edit__ac">AC:</label>
+                                    <input name="ac" type="number" placeholder="10" id="creature-edit__ac" class="form-control">
+                                </div>
+                                <div class="form-group creature__isPlayer">
+                                    <input
+                                        type="checkbox"
+                                        id="creature-edit__isPlayer"
+                                        name="isPlayer"
+                                        value="true"/>
+                                    <label for="creature-edit__isPlayer">is player?</label>
+                                </div>
+                                
+                            </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" name="action" value="save" class="btn btn-success">
+                        <input type="submit" name="action" value="delete" class="btn btn-danger">
+                    </div>
                 </div>
-                <div class="form-group creature__name">
-                    <label for="creature-edit__name">Name: </label>
-                    <input name="name" placeholder="Name" id="creature-edit__name" class="form-control">
-                </div>
-                <div class="form-group creature__hp">
-                    <label for="creature-edit__hp">HP: </label>
-                    <input name="hp" type="number" placeholder="10" id="creature-edit__hp" class="form-control">
-                </div>
-                <div class="form-group creature__hp">
-                    <label for="creature-edit__hpMax">Max. HP: </label>
-                    <input name="hpMax" type="number" placeholder="10" id="creature-edit__hpMax" class="form-control">
-                </div>
-                <div class="form-group creature__ac">
-                    <label for="creature-edit__ac">AC:</label>
-                    <input name="ac" type="number" placeholder="10" id="creature-edit__ac" class="form-control">
-                </div>
-                <div class="form-group creature__isPlayer">
-                    <input
-                        type="checkbox"
-                        id="creature-edit__isPlayer"
-                        name="isPlayer"
-                        value="true"/>
-                    <label for="creature-edit__isPlayer">is player?</label>
-                </div>
-                <div class="creature__buttons">
-                    <input type="submit" name="action" value="save" class="btn btn-success">
-                    <input type="submit" name="action" value="delete" class="btn btn-danger">
-                </div>
+                </form>
             </div>
-        </form>
+        </div>
+
     </body>
 </html>
