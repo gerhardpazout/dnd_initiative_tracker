@@ -162,7 +162,8 @@ class CreatureList {
         // var hp = (creature.isPlayer)? creature.hp : creature.hp;
         // var hpMax = (creature.isPlayer)? creature.hpMax : '';
         var hpMax = (creature.isPlayer && !isNaN(creature.hpMax))? creature.hpMax : '?';
-        var hpDisplay = (creature.isPlayer)? '' + creature.hp + '/' + hpMax : creature.hp;
+        var hp = (isNaN(creature.hp))? 0 : creature.hp;
+        var hpDisplay = (creature.isPlayer)? '' + hp + '/' + hpMax : hp;
         var ac = (creature.isPlayer)? creature.ac : '';
         li.innerHTML = 
         '<div class="creature" data-current="' + creature.current + '">' + 
