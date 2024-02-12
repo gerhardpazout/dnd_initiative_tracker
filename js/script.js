@@ -79,6 +79,7 @@ class CreatureList {
         this.nextTurn =  document.getElementById('tracker-next-turn');
         this.saveButton =  document.getElementById('tracker-save');
         this.loadButton =  document.getElementById('tracker-load');
+        this.editModal = new bootstrap.Modal(document.getElementById('edit-creature-modal'), {})
         this.current = 0;
         console.log(this.creatures);
     }
@@ -112,9 +113,11 @@ class CreatureList {
                 switch(action) {
                     case "save":
                         that.editCreature(creatureNew, index); // override creature in this.creatures
+                        that.editModal.hide();
                         break;
                     case "delete":
                         that.deleteCreature(index);
+                        that.editModal.hide();
                         break;
                 }
             }
@@ -134,8 +137,9 @@ class CreatureList {
         
         // Button for editing creature (fill 'edit' form)
         document.addEventListener("click", function(e){
-            if(e.target.className == 'creature__edit' ) {
+            if(e.target.className.includes('creature__edit') ) {
                 that.fillEditForm(e.target.getAttribute("data-index"));
+                that.editModal.show();
             };
         });
 
@@ -180,13 +184,13 @@ class CreatureList {
         var hpDisplay = (creature.isPlayer)? '' + hp + '/' + hpMax : hp;
         var ac = (creature.isPlayer)? creature.ac : '';
         li.innerHTML = 
-        '<div class="creature" data-current="' + creature.current + '">' + 
-            '<div class="creature__initiative">' + creature.initiative + '</div>' +
-            '<div class="creature__name">' + creature.name + '</div>' +
-            '<div class="creature__hp">' + hpDisplay + '</div>' +
-            '<div class="creature__ac">' + ac + '</div>' +
-            '<div class="creature__buttons">' + 
-                '<button class="creature__edit" data-index="' + index + '">edit</button>' + 
+        '<div class="creature row" data-current="' + creature.current + '">' + 
+            '<div class="creature__initiative col-1">' + creature.initiative + '</div>' +
+            '<div class="creature__name col-3">' + creature.name + '</div>' +
+            '<div class="creature__hp col-2">' + hpDisplay + '</div>' +
+            '<div class="creature__ac col-1">' + ac + '</div>' +
+            '<div class="creature__buttons offset-2 col-3">' + 
+                '<button class="creature__edit btn btn-outline-light" data-index="' + index + '">edit</button>' + 
             '</div>' +
         '</div>'
         return li;

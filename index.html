@@ -1,9 +1,46 @@
 <!DOCTYPE html>
     <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+        <!-- libraries -->
+        <link href="./src/libs/bootstrap-5.0.2-dist/css/bootstrap.min.css" rel="stylesheet"/>
+        <script src="./src/libs/bootstrap-5.0.2-dist/js/bootstrap.bundle.min.js" type="text/javascript"></script>
+
         <link href="./css/style.css" rel="stylesheet"/>
         <script src="./js/script.js" type="text/javascript"></script>
     </head>
     <body>
+        <div class="bg-wallpaper"></div>
+
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-5">
+            <div class="container-fluid">
+              <a class="navbar-brand" href="#">Initiative Tracker</a>
+              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                  <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Load
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li>
+                            <label class="dropdown-item" for="json-file">From file </label>
+                            <input type="file" onchange="readFile()" id="json-file" class="form-control" hidden/>
+                        </li>
+                        <li>
+                            <button id="tracker-load" class="dropdown-item">From local storage</button>
+                        </li>
+                    </ul>
+                  </li>
+                  <li class="nav-item">
+                    <button id="tracker-save" class="btn btn-link nav-link">Save to local storage</button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+        </nav>
         
         <!--
         <input type='file' accept='text/plain' onchange='openFile(event)'>
@@ -13,30 +50,21 @@
         </div>
         -->
 
-        <input type="file" onchange="readFile()" /><br />
-        <button id="tracker-save">Save</button>
-        <button id="tracker-load">Load</button>
-
-        <div class="content">
-            
-        </div>
-
-        
-
-        <div class="creature creature-legend">
-            <div class="creature__initiative">
+    <div class="creature-list-wrapper container">
+        <div class="creature-list-legend row">
+            <div class="creature__initiative col-1">
                 <span>Initiative</span>
             </div>
-            <div class="creature__name">
+            <div class="creature__name col-3">
                 <span>Name</span>
             </div>
-            <div class="creature__hp">
+            <div class="creature__hp col-2">
                 <span>HP</span>
             </div>
-            <div class="creature__ac">
+            <div class="creature__ac col-2">
                 <span>AC</span>
             </div>
-            <div class="creature__buttons">
+            <div class="creature__buttons offset-1 col-3">
                 <span>Action</span>
                 <!--
                     <div class="edit">
@@ -48,25 +76,24 @@
         <ul class="creature-list list-unstyled" id="creature-list">
         </ul>
         <form id="form-creature-new">
-            <div class="creature" id="creature-new">
+            <div class="creature row" id="creature-new">
                 <input type="hidden" name="current" value="false">
                 <input type="hidden" name="damaged" value="0">
-                <div class="creature__initiative">
-                    <input name="initiative" type="number" placeholder="10">
+                <div class="creature__initiative col-1">
+                    <input name="initiative" type="number" placeholder="Initiative" class="form-control" required>
                 </div>
-                <div class="creature__name">
-                    <input name="name" placeholder="Name">
+                <div class="creature__name col-3">
+                    <input name="name" placeholder="Name" class="form-control" required>
                 </div>
-                <div class="creature__hp">
-                    <input name="hp" type="number" placeholder="10">
+                <div class="creature__hp col-2">
+                    <input name="hp" type="number" placeholder="HP" class="form-control">
+                    <span>/</span>
+                    <input name="hpMax" type="number" placeholder="Max. HP" class="form-control">
                 </div>
-                <div class="creature__hp">
-                    <input name="hpMax" type="number" placeholder="10">
+                <div class="creature__ac col-1">
+                    <input name="ac" type="number" placeholder="AC" class="form-control">
                 </div>
-                <div class="creature__ac">
-                    <input name="ac" type="number" placeholder="10">
-                </div>
-                <div class="creature__isPlayer">
+                <div class="creature__isPlayer col-2">
                     <input
                         type="checkbox"
                         id="isPlayer"
@@ -74,55 +101,69 @@
                         value="true"/>
                     <label for="isPlayer">is player?</label>
                 </div>
-                <div class="creature__buttons">
-                    <input type="submit" value="+">
+                <div class="creature__buttons col-3">
+                    <input type="submit" value="Add to list" class="btn btn-outline-light">
                 </div>
             </div>
         </form>
-        <button id="tracker-prev-turn">Previous Turn</button>
-        <button id="tracker-next-turn">Next Turn</button>
+        <button id="tracker-prev-turn" class="btn btn-secondary">Previous Turn</button>
+        <button id="tracker-next-turn" class="btn btn-secondary">Next Turn</button>
+    </div>
 
-        <br>
-        <br>
-        <form id="form-creature-edit">
-            <div class="creature-edit" id="creature-edit">
-                <h2>Edit Creature:</h2>
-                <input type="hidden" name="index" value="">
-                <input type="hidden" name="current" value="false">
-                <input type="hidden" name="damaged" value="0">
-                <div class="form-group creature__initiative">
-                    <label for="creature-edit__initiative">Initiative: </label>
-                    <input name="initiative" type="number" placeholder="10" id="creature-edit__initiative" class="form-control">
+        
+        <!-- Modal -->
+        <div class="modal fade" id="edit-creature-modal" tabindex="-1" aria-labelledby="edit-creature-modal-label" aria-hidden="true">
+            <div class="modal-dialog">
+                <form id="form-creature-edit">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="edit-creature-modal-label">Edit Creature</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                            <div class="creature-edit" id="creature-edit">
+                                <input type="hidden" name="index" value="">
+                                <input type="hidden" name="current" value="false">
+                                <input type="hidden" name="damaged" value="0">
+                                <div class="form-group creature__initiative">
+                                    <label for="creature-edit__initiative">Initiative: </label>
+                                    <input name="initiative" type="number" placeholder="10" id="creature-edit__initiative" class="form-control">
+                                </div>
+                                <div class="form-group creature__name">
+                                    <label for="creature-edit__name">Name: </label>
+                                    <input name="name" placeholder="Name" id="creature-edit__name" class="form-control">
+                                </div>
+                                <div class="form-group creature__hp">
+                                    <label for="creature-edit__hp">HP: </label>
+                                    <input name="hp" type="number" placeholder="10" id="creature-edit__hp" class="form-control">
+                                </div>
+                                <div class="form-group creature__hp">
+                                    <label for="creature-edit__hpMax">Max. HP: </label>
+                                    <input name="hpMax" type="number" placeholder="10" id="creature-edit__hpMax" class="form-control">
+                                </div>
+                                <div class="form-group creature__ac">
+                                    <label for="creature-edit__ac">AC:</label>
+                                    <input name="ac" type="number" placeholder="10" id="creature-edit__ac" class="form-control">
+                                </div>
+                                <div class="form-group creature__isPlayer">
+                                    <input
+                                        type="checkbox"
+                                        id="creature-edit__isPlayer"
+                                        name="isPlayer"
+                                        value="true"/>
+                                    <label for="creature-edit__isPlayer">is player?</label>
+                                </div>
+                                
+                            </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" name="action" value="save" class="btn btn-success">
+                        <input type="submit" name="action" value="delete" class="btn btn-danger">
+                    </div>
                 </div>
-                <div class="form-group creature__name">
-                    <label for="creature-edit__name">Name: </label>
-                    <input name="name" placeholder="Name" id="creature-edit__name" class="form-control">
-                </div>
-                <div class="form-group creature__hp">
-                    <label for="creature-edit__hp">HP: </label>
-                    <input name="hp" type="number" placeholder="10" id="creature-edit__hp" class="form-control">
-                </div>
-                <div class="form-group creature__hp">
-                    <label for="creature-edit__hpMax">Max. HP: </label>
-                    <input name="hpMax" type="number" placeholder="10" id="creature-edit__hpMax" class="form-control">
-                </div>
-                <div class="form-group creature__ac">
-                    <label for="creature-edit__ac">AC:</label>
-                    <input name="ac" type="number" placeholder="10" id="creature-edit__ac" class="form-control">
-                </div>
-                <div class="form-group creature__isPlayer">
-                    <input
-                        type="checkbox"
-                        id="creature-edit__isPlayer"
-                        name="isPlayer"
-                        value="true"/>
-                    <label for="creature-edit__isPlayer">is player?</label>
-                </div>
-                <div class="creature__buttons">
-                    <input type="submit" name="action" value="save" class="btn btn-success">
-                    <input type="submit" name="action" value="delete" class="btn btn-danger">
-                </div>
+                </form>
             </div>
-        </form>
+        </div>
+
     </body>
 </html>
