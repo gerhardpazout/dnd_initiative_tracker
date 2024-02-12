@@ -7,24 +7,35 @@ body {
     padding-left: 0;
     margin: 0;
 }
+.creature-list-wrapper {
+    padding: 1em;
+}
 
+.creature-list-legend span {
+    font-weight: bold;
+}
 .creature {
+    /*
     display: flex;
     flex-direction: row;
     align-items: flex-start;
     width: 100%;
+    */
 }
 .creature[data-current="true"] {
     color: red;
 }
 
 .creature > div {
+    /*
     padding-left: 0.5rem;
     padding-right: 0.5rem;
 
     display: flex;
     flex-direction: column;
+    */
 }
+
 .creature > div .edit,
 .creature > div .edit input 
 { 
@@ -36,17 +47,19 @@ body {
 .creature .creature__hp,
 .creature .creature__buttons
  { 
+    /*
     width: 10%;
     min-width: 2em;
     max-width: 50px;
+    */
 }
 
 .creature .creature__name { 
-    width: 40%;
+    /*width: 40%;*/
 }
 
 form#form-creature-new input {
-    width: 100%;
+    /*width: 100%;*/
 }
 
 .creature-edit {
@@ -70,6 +83,7 @@ form h2 {
     margin-bottom: 0.5rem;
 }
 
+/*
 .form-group {
     display: flex;
 
@@ -77,14 +91,18 @@ form h2 {
     padding-left: 0;
     padding-right: 0;
 }
+*/
 .form-group > label {
     width: calc(100% * (4 / 12));
 }
+/*
 .form-control {
     padding: 0.5rem;
     border: 1px solid black;
     border-radius: 0;
 }
+*/
+/*
 .btn {
     border-radius: 0;
     border: none;
@@ -98,3 +116,4 @@ form h2 {
     background-color: #9f1111;
     color: #ffffff;
 }
+*/

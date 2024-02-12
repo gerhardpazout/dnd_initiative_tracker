@@ -180,13 +180,13 @@ class CreatureList {
         var hpDisplay = (creature.isPlayer)? '' + hp + '/' + hpMax : hp;
         var ac = (creature.isPlayer)? creature.ac : '';
         li.innerHTML = 
-        '<div class="creature" data-current="' + creature.current + '">' + 
-            '<div class="creature__initiative">' + creature.initiative + '</div>' +
-            '<div class="creature__name">' + creature.name + '</div>' +
-            '<div class="creature__hp">' + hpDisplay + '</div>' +
-            '<div class="creature__ac">' + ac + '</div>' +
-            '<div class="creature__buttons">' + 
-                '<button class="creature__edit" data-index="' + index + '">edit</button>' + 
+        '<div class="creature row" data-current="' + creature.current + '">' + 
+            '<div class="creature__initiative col-1">' + creature.initiative + '</div>' +
+            '<div class="creature__name col-3">' + creature.name + '</div>' +
+            '<div class="creature__hp col-2">' + hpDisplay + '</div>' +
+            '<div class="creature__ac col-1">' + ac + '</div>' +
+            '<div class="creature__buttons offset-2 col-3">' + 
+                '<button class="creature__edit btn btn-primary" data-index="' + index + '">edit</button>' + 
             '</div>' +
         '</div>'
         return li;

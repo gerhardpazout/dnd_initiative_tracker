@@ -1,5 +1,9 @@
 <!DOCTYPE html>
     <head>
+        <!-- libraries -->
+        <link href="./src/libs/bootstrap-5.0.2-dist/css/bootstrap.min.css" rel="stylesheet"/>
+        <script src="./src/libs/bootstrap-5.0.2-dist/js/bootstrap.bundle.min.js" type="text/javascript"></script>
+
         <link href="./css/style.css" rel="stylesheet"/>
         <script src="./js/script.js" type="text/javascript"></script>
     </head>
@@ -13,30 +17,30 @@
         </div>
         -->
 
-        <input type="file" onchange="readFile()" /><br />
-        <button id="tracker-save">Save</button>
-        <button id="tracker-load">Load</button>
+        <input type="file" onchange="readFile()" class="form-control"/><br />
+        <button id="tracker-save" class="btn btn-secondary">Save</button>
+        <button id="tracker-load" class="btn btn-secondary">Load</button>
 
         <div class="content">
             
         </div>
 
         
-
-        <div class="creature creature-legend">
-            <div class="creature__initiative">
+    <div class="creature-list-wrapper">
+        <div class="creature-list-legend row">
+            <div class="creature__initiative col-1">
                 <span>Initiative</span>
             </div>
-            <div class="creature__name">
+            <div class="creature__name col-3">
                 <span>Name</span>
             </div>
-            <div class="creature__hp">
+            <div class="creature__hp col-2">
                 <span>HP</span>
             </div>
-            <div class="creature__ac">
+            <div class="creature__ac col-2">
                 <span>AC</span>
             </div>
-            <div class="creature__buttons">
+            <div class="creature__buttons offset-1 col-3">
                 <span>Action</span>
                 <!--
                     <div class="edit">
@@ -48,25 +52,25 @@
         <ul class="creature-list list-unstyled" id="creature-list">
         </ul>
         <form id="form-creature-new">
-            <div class="creature" id="creature-new">
+            <div class="creature row" id="creature-new">
                 <input type="hidden" name="current" value="false">
                 <input type="hidden" name="damaged" value="0">
-                <div class="creature__initiative">
-                    <input name="initiative" type="number" placeholder="10">
+                <div class="creature__initiative col-1">
+                    <input name="initiative" type="number" placeholder="10" class="form-control">
                 </div>
-                <div class="creature__name">
-                    <input name="name" placeholder="Name">
+                <div class="creature__name col-3">
+                    <input name="name" placeholder="Name" class="form-control">
                 </div>
-                <div class="creature__hp">
-                    <input name="hp" type="number" placeholder="10">
+                <div class="creature__hp col-1">
+                    <input name="hp" type="number" placeholder="10" class="form-control">
                 </div>
-                <div class="creature__hp">
-                    <input name="hpMax" type="number" placeholder="10">
+                <div class="creature__hp col-1">
+                    <input name="hpMax" type="number" placeholder="10" class="form-control">
                 </div>
-                <div class="creature__ac">
-                    <input name="ac" type="number" placeholder="10">
+                <div class="creature__ac col-1">
+                    <input name="ac" type="number" placeholder="10" class="form-control">
                 </div>
-                <div class="creature__isPlayer">
+                <div class="creature__isPlayer col-2">
                     <input
                         type="checkbox"
                         id="isPlayer"
@@ -74,13 +78,14 @@
                         value="true"/>
                     <label for="isPlayer">is player?</label>
                 </div>
-                <div class="creature__buttons">
-                    <input type="submit" value="+">
+                <div class="creature__buttons col-3">
+                    <input type="submit" value="+" class="btn btn-primary">
                 </div>
             </div>
         </form>
-        <button id="tracker-prev-turn">Previous Turn</button>
-        <button id="tracker-next-turn">Next Turn</button>
+        <button id="tracker-prev-turn" class="btn btn-secondary">Previous Turn</button>
+        <button id="tracker-next-turn" class="btn btn-secondary">Next Turn</button>
+    </div>
 
         <br>
         <br>
