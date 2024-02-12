@@ -85,6 +85,7 @@ class CreatureList {
     }
 
     init() {
+        this.sendFlashMessage("File loaded successfully!", "Loading from file", SEVERITIES.SUCCESS);
         this.sort()
         var that = this;
 
@@ -157,7 +158,7 @@ class CreatureList {
         this.initKeys();
 
         // render the list of creatures
-        this.render()
+        this.render();
     }
 
     update() {
@@ -310,12 +311,49 @@ class CreatureList {
     save() {
         console.log("saving creatures to local storage...");
         localStorage.setItem("creatures", JSON.stringify(this.creatures));
+        this.sendFlashMessage("Saved successfully to local storage!", "Saving to local storage", SEVERITIES.SUCCESS);
     }
 
     load() {
         console.log("loading creatures from local storage...");
         this.creatures = JSON.parse(localStorage.getItem("creatures"));
+        this.sendFlashMessage("Loaded successfully from local storage!", "Loading from local storage", SEVERITIES.SUCCESS);
         this.update();
+    }
+
+    sendFlashMessage(message, header = '', severity = SEVERITIES.INFO) {
+        var flashMessage = new FlashMessage(message, header, severity);
+        var flashMessagesContainer = document.getElementById("flash-messages");
+        flashMessagesContainer.appendChild(flashMessage.html());
+
+        var flashMessages = flashMessagesContainer.children;
+        console.log(flashMessages);
+        const intervalID = setInterval(function (){
+            for (let i = 0; i < flashMessages.length; i++) {
+                if(!flashMessages[i].classList.contains("fade")){
+                    flashMessages[i].classList.add('fade');
+                }
+            }
+            clearInterval(intervalID);
+        }, 4000, flashMessage);
+
+        
+        /*
+        var flashMessages = flashMessagesContainer.children;
+        const intervalID = setInterval(function (){
+            // flashMessagesContainer
+            for (let i = 0; i < flashMessages.length; i++) {
+                if(flashMessages[i].classList.contains("fade")){
+                    flashMessages[i].classList.add('hidden');
+                }
+                else {
+                    flashMessages[i].classList.contains("fade")
+                }
+            }
+
+            clearInterval(intervalID);
+        }, 500, flashMessage);
+        */
     }
 }
 
@@ -355,4 +393,40 @@ class Creature {
             "current": this.current
         }
     }
+}
+
+const SEVERITIES = {
+    INFO: "info",
+    SUCCESS: "success",
+    WARNING: "warning",
+    ERROR: "error"
+};
+
+class FlashMessage {
+
+    constructor(message, header, severity) {
+        this.message = message
+        this.header = header
+        this.severity = severity
+        this.SEVERITIES = SEVERITIES;
+    }
+
+    html() {
+        var htmlHeader = (this.header)?  '<h4 class="alert-heading">' + this.header + '</h4>': '';
+        var div = document.createElement('div');
+        var severityClass = 'alert-' + ((this.severity)? this.severity : this.SEVERITIES.INFO);
+        div.classList.add('alert', 'alert-dismissible');
+        div.classList.add(severityClass);
+        div.setAttribute("role", "alert");
+        div.innerHTML =  
+            '<div class="alert-content">' + 
+                htmlHeader + 
+                '<p>' + this.message + '</p>' + 
+            '</div>' + 
+            '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'
+        ;
+        return div;
+    }
+
+
 }

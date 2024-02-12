@@ -37,6 +37,34 @@ input[type="checkbox"] {
     z-index: -10;
 }
 
+
+#flash-messages {
+    position: absolute;
+    /*width: calc(100% - 40px);
+    top: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    */
+    right: 20px;
+    top: 20px;
+    min-width: 290px;
+    width: 100%;
+    max-width: 400px;
+    z-index: 100;
+}
+
+
+.alert.fade:not(.show) {
+    display: none;
+}
+.alert .alert-content p:last-child {
+    margin-bottom: 0;
+}
+.alert-heading {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
 .list-unstyled {
     list-style-type: none;
     padding-left: 0;
