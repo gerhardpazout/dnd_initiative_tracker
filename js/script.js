@@ -77,6 +77,8 @@ class CreatureList {
         this.formEdit = document.getElementById('form-creature-edit');
         this.prevTurn =  document.getElementById('tracker-prev-turn');
         this.nextTurn =  document.getElementById('tracker-next-turn');
+        this.saveButton =  document.getElementById('tracker-save');
+        this.loadButton =  document.getElementById('tracker-load');
         this.current = 0;
         console.log(this.creatures);
     }
@@ -137,8 +139,20 @@ class CreatureList {
             };
         });
 
+        // save button
+        this.saveButton.addEventListener("click", function(e) {
+            that.save();
+        });
+
+         // load button
+         this.loadButton.addEventListener("click", function(e) {
+            that.load();
+        });
+
+        // initialize listeners for keyboard events
         this.initKeys();
 
+        // render the list of creatures
         this.render()
     }
 
@@ -162,7 +176,7 @@ class CreatureList {
         // var hp = (creature.isPlayer)? creature.hp : creature.hp;
         // var hpMax = (creature.isPlayer)? creature.hpMax : '';
         var hpMax = (creature.isPlayer && !isNaN(creature.hpMax))? creature.hpMax : '?';
-        var hp = (isNaN(creature.hp))? 0 : creature.hp;
+        var hp = (isNaN(creature.hp) || creature.hp === null)? 0 : creature.hp;
         var hpDisplay = (creature.isPlayer)? '' + hp + '/' + hpMax : hp;
         var ac = (creature.isPlayer)? creature.ac : '';
         li.innerHTML = 
@@ -289,17 +303,16 @@ class CreatureList {
         });
     }
 
-    /*
-    templateForLi(){
-        var html = 
-        '<div class="creature">' + 
-            '<div class="creature__initiative">%s</div>' +
-            '<div class="creature__name">%s</div>' +
-            '<div class="creature__hp">%s</div>' +
-            '<div class="creature__hp">%s</div>' +
-        '</div>'
+    save() {
+        console.log("saving creatures to local storage...");
+        localStorage.setItem("creatures", JSON.stringify(this.creatures));
     }
-    */
+
+    load() {
+        console.log("loading creatures from local storage...");
+        this.creatures = JSON.parse(localStorage.getItem("creatures"));
+        this.update();
+    }
 }
 
 class Creature {
