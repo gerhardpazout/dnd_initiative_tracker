@@ -75,6 +75,18 @@ input[type="checkbox"] {
     background-color: var(--creature-list-bg);
     color: var(--creature-list-color);
     margin-bottom: var(--creature-list-item-margin-bottom);
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    padding-left: 0.5rem;
+}
+.creature-list-legend span {
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.creature-list-legend span i {
+    margin-right: 0.5em;
 }
 
 .creature-list li {
@@ -186,6 +198,9 @@ form#form-creature-new input {
     flex-basis: 100%;
 }
 */
+.creature-edit label i {
+    margin-right: 0.25rem;
+}
 
 form h2 {
     margin-top: 0;
