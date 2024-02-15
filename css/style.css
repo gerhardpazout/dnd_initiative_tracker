@@ -220,13 +220,25 @@ form#form-creature-new input {
     flex-basis: 100%;
 }
 */
+.creature-edit fieldset legend {
+    font-size: 1em;
+}
+.creature-edit .creature__hp__fieldset {
+    margin-bottom: 1em;
+}
+.creature-edit .creature__hp__fieldset .form-group { 
+    flex-grow: 1;
+    margin-bottom: 0;
+}
 .creature-edit .form-group {
     margin-bottom: 1rem;
 }
-.creature-edit .form-group label {
+.creature-edit .form-group label,
+.creature-edit fieldset legend {
     margin-bottom: 0.25rem;
 }
-.creature-edit label i {
+.creature-edit label i,
+.creature-edit fieldset legend i {
     margin-right: 0.25rem;
 }
 
