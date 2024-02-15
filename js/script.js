@@ -191,7 +191,9 @@ class CreatureList {
             '<div class="creature__hp col-2">' + hpDisplay + '</div>' +
             '<div class="creature__ac col-1">' + ac + '</div>' +
             '<div class="creature__buttons offset-2 col-3">' + 
-                '<button class="creature__edit btn btn-outline-light" data-index="' + index + '">edit</button>' + 
+                '<button class="creature__edit btn btn-outline-light" data-index="' + index + '">' + 
+                    'edit <i class="bi bi-pen"></i>' + 
+                '</button>' + 
             '</div>' +
         '</div>'
         return li;
