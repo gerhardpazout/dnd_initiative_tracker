@@ -123,7 +123,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="edit-creature-modal-label">Edit Creature</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                             <div class="creature-edit" id="creature-edit">
@@ -142,21 +142,26 @@
                                     </label>
                                     <input name="name" placeholder="Name" id="creature-edit__name" class="form-control">
                                 </div>
-                                <div class="form-group creature__hp">
-                                    <label for="creature-edit__hp">
-                                        <i class="bi bi-heart-fill"></i> HP:
-                                    </label>
-                                    <input name="hp" type="number" placeholder="10" id="creature-edit__hp" class="form-control">
-                                </div>
-                                <div class="form-group creature__hp">
-                                    <label for="creature-edit__hpMax">Max. HP: </label>
-                                    <input name="hpMax" type="number" placeholder="10" id="creature-edit__hpMax" class="form-control">
-                                </div>
+                                <fieldset class="creature__hp__fieldset">
+                                    <legend><i class="bi bi-heart-fill"></i> HP:</legend>
+                                    <div class="d-flex flex-row">
+                                        <div class="form-group creature__hp">
+                                            <label for="creature-edit__hp" class="visually-hidden">HP:</label>
+                                            <input name="hp" type="number" placeholder="HP" id="creature-edit__hp" class="form-control">
+                                        </div>
+                                        <span class="d-flex mx-2 d-flex align-items-center mx-2"> / </span>
+                                        <div class="form-group creature__hp">
+                                            <label for="creature-edit__hpMax" class="visually-hidden">Max. HP: </label>
+                                            <input name="hpMax" type="number" placeholder="Max. HP" id="creature-edit__hpMax" class="form-control">
+                                        </div>
+                                    </div>
+                                    
+                                </fieldset>
                                 <div class="form-group creature__ac">
                                     <label for="creature-edit__ac">
                                         <i class="bi bi-shield-shaded"></i> AC:
                                     </label>
-                                    <input name="ac" type="number" placeholder="10" id="creature-edit__ac" class="form-control">
+                                    <input name="ac" type="number" placeholder="AC" id="creature-edit__ac" class="form-control">
                                 </div>
                                 <div class="form-group creature__isPlayer">
                                     <input
@@ -170,8 +175,8 @@
                             </div>
                     </div>
                     <div class="modal-footer">
-                        <input type="submit" name="action" value="save" class="btn btn-success">
-                        <input type="submit" name="action" value="delete" class="btn btn-danger">
+                        <button type="submit" name="action" value="save" class="btn btn-success"><i class="bi bi-check-lg"></i> accept</button>
+                        <button type="submit" name="action" value="delete" class="btn btn-danger"><i class="bi bi-trash"></i> delete</button>
                     </div>
                 </div>
                 </form>
