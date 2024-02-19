@@ -124,6 +124,9 @@ input[type="checkbox"] {
     transition: all ease 0.5;
     position: relative;
 }
+.creature-list .creature .creature__conditions {
+    font-style: italic;
+}
 
 #form-creature-new .creature .creature__hp input:nth-of-type(1) {
     /*width: auto;*/
