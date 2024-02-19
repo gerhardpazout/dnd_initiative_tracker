@@ -8,7 +8,8 @@
             "ac": 15,
             "isPlayer": true,
             "initiative": 17,
-            "current": false
+            "current": false,
+            "conditions": ""
         },
         {
             "name": "Ladyium",
@@ -18,7 +19,8 @@
             "ac": 14,
             "isPlayer": true,
             "initiative": 6,
-            "current": true
+            "current": true,
+            "conditions": ""
         },
         {
             "name": "Bandit",
@@ -28,7 +30,8 @@
             "ac": 12,
             "isPlayer": false,
             "initiative": 15,
-            "current": false
+            "current": false,
+            "conditions": "restrained"
         }
     ]
 }

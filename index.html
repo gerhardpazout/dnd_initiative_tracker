@@ -70,10 +70,13 @@
             <div class="creature__hp col-2">
                 <span><i class="bi bi-heart-fill"></i> HP</span>
             </div>
-            <div class="creature__ac col-2">
+            <div class="creature__ac col-1">
                 <span><i class="bi bi-shield-shaded"></i> AC</span>
             </div>
-            <div class="creature__buttons offset-1 col-3">
+            <div class="creature__ac col-1">
+                <span><i class="bi bi-body-text"></i> Conditions</span>
+            </div>
+            <div class="creature__buttons col-3">
                 <span><i class="bi bi-hand-index"></i> Action</span>
             </div>
         </div>
@@ -129,18 +132,24 @@
                                 <input type="hidden" name="index" value="">
                                 <input type="hidden" name="current" value="false">
                                 <input type="hidden" name="damaged" value="0">
+
+                                <!-- Initiative -->
                                 <div class="form-group creature__initiative">
                                     <label for="creature-edit__initiative">
                                         <i class="bi bi-list-ol"></i> Initiative: 
                                     </label>
                                     <input name="initiative" type="number" placeholder="10" id="creature-edit__initiative" class="form-control">
                                 </div>
+
+                                <!-- Name -->
                                 <div class="form-group creature__name">
                                     <label for="creature-edit__name">
                                         <i class="bi bi-person-standing"></i> Name:
                                     </label>
                                     <input name="name" placeholder="Name" id="creature-edit__name" class="form-control">
                                 </div>
+
+                                <!-- HP -->
                                 <fieldset class="creature__hp__fieldset">
                                     <legend><i class="bi bi-heart-fill"></i> HP:</legend>
                                     <div class="d-flex flex-row">
@@ -154,13 +163,22 @@
                                             <input name="hpMax" type="number" placeholder="Max. HP" id="creature-edit__hpMax" class="form-control">
                                         </div>
                                     </div>
-                                    
                                 </fieldset>
+
+                                <!-- AC -->
                                 <div class="form-group creature__ac">
                                     <label for="creature-edit__ac">
                                         <i class="bi bi-shield-shaded"></i> AC:
                                     </label>
                                     <input name="ac" type="number" placeholder="AC" id="creature-edit__ac" class="form-control">
+                                </div>
+
+                                <!-- Conditions -->
+                                <div class="form-group creature__conditions">
+                                    <label for="creature-edit__conditions">
+                                        <i class="bi bi-body-text"></i> Conditions:
+                                    </label>
+                                    <textarea name="conditions" placeholder="condition 1, condition 2, ..." id="creature-edit__conditions" class="form-control" rows="3" cols="50"></textarea>
                                 </div>
                                 <div class="form-group creature__isPlayer">
                                     <input

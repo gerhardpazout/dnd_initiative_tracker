@@ -256,13 +256,16 @@ class CreatureList {
         var hp = (isNaN(creature.hp) || creature.hp === null)? 0 : creature.hp;
         var hpDisplay = (creature.isPlayer)? '' + hp + '/' + hpMax : hp;
         var ac = (creature.isPlayer)? creature.ac : '';
+        var conditions = (creature.conditions)? creature.conditions : '';
+
         li.innerHTML = 
         '<div class="creature row" data-current="' + creature.current + '">' + 
             '<div class="creature__initiative col-1">' + creature.initiative + '</div>' +
             '<div class="creature__name col-3">' + creature.name + '</div>' +
             '<div class="creature__hp col-2">' + hpDisplay + '</div>' +
             '<div class="creature__ac col-1">' + ac + '</div>' +
-            '<div class="creature__buttons offset-2 col-3">' + 
+            '<div class="creature__conditions col-2">' + conditions + '</div>' +
+            '<div class="creature__buttons col-3">' + 
                 '<button class="creature__edit btn btn-outline-light" data-index="' + index + '">' + 
                     'edit' + 
                 '</button>' + 
@@ -287,13 +290,14 @@ class CreatureList {
         var ac = parseInt(array['ac']);
         var initiative = parseInt(array['initiative']);
         var current = (array['current'].toLowerCase() === 'true');
-        
+        var conditions = (array['conditions'])? array['conditions'] : '';
         var isPlayer = (array['isPlayer'])? (array['isPlayer'].toLowerCase() === 'true') : false;
 
         var creature = new Creature(name, ac, hp, hpMax, initiative);
         creature.setIsPlayer(isPlayer);
         creature.setIsCurrent(current);
         creature.setDamaged(damaged);
+        creature.setConditions(conditions);
         return creature;
     }
 
@@ -318,7 +322,7 @@ class CreatureList {
 
     fillEditForm(index) {
         var creature = this.creatures[index];
-
+        
         this.formEdit.elements["index"].value = index;
         this.formEdit.elements["initiative"].value = creature.initiative;
         this.formEdit.elements["name"].value = creature.name;
@@ -327,6 +331,7 @@ class CreatureList {
         this.formEdit.elements["damaged"].value = creature.damaged;
         this.formEdit.elements["ac"].value = creature.ac;
         this.formEdit.elements["isPlayer"].checked = creature.isPlayer;
+        this.formEdit.elements["conditions"].value = creature.conditions;
         this.formEdit.elements["current"].value = creature.current;
     }
 
@@ -339,6 +344,7 @@ class CreatureList {
         this.formEdit.elements["damaged"].value = '';
         this.formEdit.elements["ac"].value = '';
         this.formEdit.elements["isPlayer"].checked = false;
+        this.formEdit.elements["conditions"].value = '';
         this.formEdit.elements["current"].value = false;
     }
 
@@ -409,8 +415,9 @@ class Creature {
         this.hp = hp;
         this.hpMax = hpMax;
         this.initiative = initiative;
-        this.isPlayer = false,
-        this.current = false
+        this.isPlayer = false;
+        this.current = false;
+        this.conditions = '';
     }
 
     setIsPlayer(isPlayer) {
@@ -425,6 +432,10 @@ class Creature {
         this.damaged = damaged;
     }
 
+    setConditions(conditions) {
+        this.conditions = conditions;
+    }
+
     json() {
         return {
             "name": this.name,
@@ -434,7 +445,8 @@ class Creature {
             "ac": this.ac,
             "isPlayer": this.isPlayer,
             "initiative": this.initiative,
-            "current": this.current
+            "conditions": this.conditions,
+            "current": this.current,
         }
     }
 }
