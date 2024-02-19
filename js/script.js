@@ -1,15 +1,4 @@
-console.log('js works!')
-
-function readFile() {
-    var fileHandler = new FileHandler2();
-    fileHandler.init();
-
-    setTimeout(function(){
-        var creatureList = new CreatureList(fileHandler.json);
-        creatureList.init();
-    },500);
-}
-
+document.addEventListener('DOMContentLoaded', function () {
 
 class File {
     constructor(file) {
@@ -29,12 +18,71 @@ class File {
         this.originalFile = file;
     }
 }
+
+const SEVERITIES = {
+    INFO: "info",
+    SUCCESS: "success",
+    WARNING: "warning",
+    ERROR: "danger"
+};
+
+class FlashMessage {
+
+    constructor(message, header, severity) {
+        this.message = message
+        this.header = header
+        this.severity = severity
+        this.SEVERITIES = SEVERITIES;
+    }
+
+    html() {
+        var htmlHeader = (this.header)?  '<h4 class="alert-heading">' + this.header + '</h4>': '';
+        var div = document.createElement('div');
+        var severityClass = 'alert-' + ((this.severity)? this.severity : this.SEVERITIES.INFO);
+        div.classList.add('alert', 'alert-dismissible');
+        div.classList.add(severityClass);
+        div.setAttribute("role", "alert");
+        div.innerHTML =  
+            '<div class="alert-content">' + 
+                htmlHeader + 
+                '<p>' + this.message + '</p>' + 
+            '</div>' + 
+            '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'
+        ;
+        return div;
+    }
+}
+
+class FlashMessageService {
+    constructor() {
+        this.SEVERITIES = SEVERITIES;
+    }
+
+    sendFlashMessage(message, header = '', severity = SEVERITIES.INFO) {
+        var flashMessage = new FlashMessage(message, header, severity);
+        var flashMessagesContainer = document.getElementById("flash-messages");
+        flashMessagesContainer.appendChild(flashMessage.html());
+
+        var flashMessages = flashMessagesContainer.children;
+        console.log(flashMessages);
+        const intervalID = setInterval(function (){
+            for (let i = 0; i < flashMessages.length; i++) {
+                if(!flashMessages[i].classList.contains("fade")){
+                    flashMessages[i].classList.add('fade');
+                }
+            }
+            clearInterval(intervalID);
+        }, 4000, flashMessage);
+    }
+}
+
 class FileHandler2 {
     constructor() {
         this.file = document.querySelector("input[type=file]").files[0];
         this.reader = new FileReader();
         this.content = '';
         this.json = '';
+        this.flashMessageService = new FlashMessageService();
     }
 
     // code from https://developer.mozilla.org/en-US/docs/Web/API/FileReader/readAsText
@@ -61,16 +109,24 @@ class FileHandler2 {
             case "application/json":
                 this.parseJSON();
                 break;
+            default:
+                this.sendFlashMessage('Error while importing from file. File must be JSON file!', 'Error while importing', this.flashMessageService.SEVERITIES.ERROR);
+                break;
         }
     }
 
-    parseJSON() {        
+    parseJSON() {  
+        console.log('parsing json');      
         this.json = JSON.parse(this.content);
+    }
+
+    sendFlashMessage(message, header = '', severity = SEVERITIES.INFO) {
+        this.flashMessageService.sendFlashMessage(message, header, severity);
     }
 }
 
 class CreatureList {
-    constructor(json) {
+    constructor(json = '') {
         this.creatures = json.creatures;
         this.el = document.getElementById('creature-list');
         this.formNew = document.getElementById('form-creature-new');
@@ -79,13 +135,16 @@ class CreatureList {
         this.nextTurn =  document.getElementById('tracker-next-turn');
         this.saveButton =  document.getElementById('tracker-save');
         this.loadButton =  document.getElementById('tracker-load');
+        this.fileUploadField = document.getElementById('json-file');
         this.editModal = new bootstrap.Modal(document.getElementById('edit-creature-modal'), {})
         this.current = 0;
+        this.flashMessageService = new FlashMessageService();
         console.log(this.creatures);
     }
 
     init() {
-        this.sendFlashMessage("File loaded successfully!", "Loading from file", SEVERITIES.SUCCESS);
+        console.log('initializing CreateList...')
+        this.sendFlashMessage("Initiating Creature List...", "", SEVERITIES.SUCCESS);
         this.sort()
         var that = this;
 
@@ -149,9 +208,10 @@ class CreatureList {
             that.save();
         });
 
-         // load button
-         this.loadButton.addEventListener("click", function(e) {
+        // load button
+        this.loadButton.addEventListener("click", function(e) {
             that.load();
+            that.clearFileUploadField();
         });
 
         // initialize listeners for keyboard events
@@ -168,10 +228,24 @@ class CreatureList {
     }
 
     render() {
-        for (var i = 0; i <= this.creatures.length-1; i++) {
-            var creature = this.creatures[i];
-            var li = this.generateHtmlForCreature(creature, i);
-            this.el.appendChild(li);
+        if(Array.isArray(this.creatures) && this.creatures.length > 0) {
+            for (var i = 0; i <= this.creatures.length-1; i++) {
+                var creature = this.creatures[i];
+                var li = this.generateHtmlForCreature(creature, i);
+                this.el.appendChild(li);
+            }
+        }
+    }
+
+    setCreatures(json) {
+        if(typeof json.creatures !== 'undefined' && json.creatures !== null && json.creatures !== '') {
+            this.creatures = json.creatures;
+            this.sort();
+            this.update();
+            this.sendFlashMessage('Creatures imported from JSON!', 'Import success!', SEVERITIES.SUCCESS);
+        }
+        else {
+            this.sendFlashMessage('No creatures found in provided JSON!', 'Error while importing JSON', SEVERITIES.ERROR);
         }
     }
 
@@ -200,9 +274,11 @@ class CreatureList {
     }
 
     sort() {
-        this.creatures.sort(function (a, b) {
-            return a.initiative - b.initiative;
-        });
+        if(typeof this.creatures !== 'undefined') {
+            this.creatures.sort(function (a, b) {
+                return a.initiative - b.initiative;
+            });
+        }
     }
 
     mapArrayToCreature(array){
@@ -271,6 +347,10 @@ class CreatureList {
         this.formEdit.elements["current"].value = false;
     }
 
+    clearFileUploadField() {
+        this.fileUploadField.value = "";
+    }
+
     getIndexOfCurrentCreature(){
         var index = this.creatures.findIndex(function (creature) {
             return creature.current === true;
@@ -324,38 +404,7 @@ class CreatureList {
     }
 
     sendFlashMessage(message, header = '', severity = SEVERITIES.INFO) {
-        var flashMessage = new FlashMessage(message, header, severity);
-        var flashMessagesContainer = document.getElementById("flash-messages");
-        flashMessagesContainer.appendChild(flashMessage.html());
-
-        var flashMessages = flashMessagesContainer.children;
-        console.log(flashMessages);
-        const intervalID = setInterval(function (){
-            for (let i = 0; i < flashMessages.length; i++) {
-                if(!flashMessages[i].classList.contains("fade")){
-                    flashMessages[i].classList.add('fade');
-                }
-            }
-            clearInterval(intervalID);
-        }, 4000, flashMessage);
-
-        
-        /*
-        var flashMessages = flashMessagesContainer.children;
-        const intervalID = setInterval(function (){
-            // flashMessagesContainer
-            for (let i = 0; i < flashMessages.length; i++) {
-                if(flashMessages[i].classList.contains("fade")){
-                    flashMessages[i].classList.add('hidden');
-                }
-                else {
-                    flashMessages[i].classList.contains("fade")
-                }
-            }
-
-            clearInterval(intervalID);
-        }, 500, flashMessage);
-        */
+        this.flashMessageService.sendFlashMessage(message, header, severity);
     }
 }
 
@@ -397,38 +446,22 @@ class Creature {
     }
 }
 
-const SEVERITIES = {
-    INFO: "info",
-    SUCCESS: "success",
-    WARNING: "warning",
-    ERROR: "error"
-};
+console.log('document ready!');
 
-class FlashMessage {
+// instantiate & initialize CreatureList
+const creatureList = new CreatureList('{}');
+creatureList.init();
 
-    constructor(message, header, severity) {
-        this.message = message
-        this.header = header
-        this.severity = severity
-        this.SEVERITIES = SEVERITIES;
-    }
+// add listener for importing creatures from JSON file
+document.getElementById('json-file').addEventListener('input', () => {
+    console.log('file uploaded!');
+    var fileHandler = new FileHandler2();
+    fileHandler.init();
+    
+    setTimeout(function(){
+        creatureList.setCreatures(fileHandler.json);
+    },500);
+    
+});
 
-    html() {
-        var htmlHeader = (this.header)?  '<h4 class="alert-heading">' + this.header + '</h4>': '';
-        var div = document.createElement('div');
-        var severityClass = 'alert-' + ((this.severity)? this.severity : this.SEVERITIES.INFO);
-        div.classList.add('alert', 'alert-dismissible');
-        div.classList.add(severityClass);
-        div.setAttribute("role", "alert");
-        div.innerHTML =  
-            '<div class="alert-content">' + 
-                htmlHeader + 
-                '<p>' + this.message + '</p>' + 
-            '</div>' + 
-            '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'
-        ;
-        return div;
-    }
-
-
-}
+}, false);
