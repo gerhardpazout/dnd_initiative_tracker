@@ -55,6 +55,7 @@ class FlashMessage {
 
 class FlashMessageService {
     constructor() {
+        this.fadeTime = 6000;
         this.SEVERITIES = SEVERITIES;
     }
 
@@ -72,7 +73,7 @@ class FlashMessageService {
                 }
             }
             clearInterval(intervalID);
-        }, 4000, flashMessage);
+        }, this.fadeTime, flashMessage);
     }
 }
 
@@ -104,19 +105,17 @@ class FileHandler2 {
     }
 
     parseFile() {
-        console.log("parsing file...");
         switch(this.file.type) {
             case "application/json":
                 this.parseJSON();
                 break;
             default:
-                this.sendFlashMessage('Error while importing from file. File must be JSON file!', 'Error while importing', this.flashMessageService.SEVERITIES.ERROR);
+                this.sendFlashMessage('File must be JSON file! No other files allowed!', 'Error while importing!', this.flashMessageService.SEVERITIES.ERROR);
                 break;
         }
     }
 
     parseJSON() {  
-        console.log('parsing json');      
         this.json = JSON.parse(this.content);
     }
 
@@ -139,11 +138,9 @@ class CreatureList {
         this.editModal = new bootstrap.Modal(document.getElementById('edit-creature-modal'), {})
         this.current = 0;
         this.flashMessageService = new FlashMessageService();
-        console.log(this.creatures);
     }
 
     init() {
-        console.log('initializing CreateList...')
         this.sendFlashMessage("Initiating Creature List...", "", SEVERITIES.SUCCESS);
         this.sort()
         var that = this;
@@ -219,12 +216,13 @@ class CreatureList {
 
         // render the list of creatures
         this.render();
+
+        this.sendFlashMessage("Finished initiating creature list!", "", SEVERITIES.SUCCESS);
     }
 
     update() {
         this.el.innerHTML = '';
         this.render();
-        console.log(this.creatures);
     }
 
     render() {
@@ -245,7 +243,7 @@ class CreatureList {
             this.sendFlashMessage('Creatures imported from JSON!', 'Import success!', SEVERITIES.SUCCESS);
         }
         else {
-            this.sendFlashMessage('No creatures found in provided JSON!', 'Error while importing JSON', SEVERITIES.ERROR);
+            this.sendFlashMessage('No creatures found in provided File!', 'Error while importing!', SEVERITIES.ERROR);
         }
     }
 
@@ -312,7 +310,6 @@ class CreatureList {
     }
 
     deleteCreature(index) {
-        console.log("deleteCreature(" + index + ")");
         // to get removed item just add "var removed = " at beginning of next line.
         this.creatures.splice(index, 1);
         this.sort();
@@ -320,9 +317,7 @@ class CreatureList {
     }
 
     fillEditForm(index) {
-        console.log('editCreature:')
         var creature = this.creatures[index];
-        console.log(creature);
 
         this.formEdit.elements["index"].value = index;
         this.formEdit.elements["initiative"].value = creature.initiative;
@@ -391,13 +386,11 @@ class CreatureList {
     }
 
     save() {
-        console.log("saving creatures to local storage...");
         localStorage.setItem("creatures", JSON.stringify(this.creatures));
         this.sendFlashMessage("Saved successfully to local storage!", "Saving to local storage", SEVERITIES.SUCCESS);
     }
 
     load() {
-        console.log("loading creatures from local storage...");
         this.creatures = JSON.parse(localStorage.getItem("creatures"));
         this.sendFlashMessage("Loaded successfully from local storage!", "Loading from local storage", SEVERITIES.SUCCESS);
         this.update();
@@ -454,7 +447,6 @@ creatureList.init();
 
 // add listener for importing creatures from JSON file
 document.getElementById('json-file').addEventListener('input', () => {
-    console.log('file uploaded!');
     var fileHandler = new FileHandler2();
     fileHandler.init();
     
