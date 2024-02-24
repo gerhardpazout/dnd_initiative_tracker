@@ -138,6 +138,7 @@ class CreatureList {
         this.editModal = new bootstrap.Modal(document.getElementById('edit-creature-modal'), {})
         this.current = 0;
         this.flashMessageService = new FlashMessageService();
+        this.dragAndDrop = { "pointerStartX" : null, "pointerStartY" : null, "element" : null, "dragging": false }
     }
 
     init() {
@@ -199,6 +200,28 @@ class CreatureList {
                 that.editModal.show();
             };
         });
+
+        this.el.addEventListener("mousedown", function(e){
+            if(e.target.className.includes('creature__drag-and-drop') || e.target.className.includes('creature__drag-and-drop-label')) {
+                that.dragCreature(e.target.getAttribute("data-index"));
+
+                document.addEventListener("mousemove", function(e){
+                    if(e.target.className.includes('creature__drag-and-drop') || e.target.className.includes('creature__drag-and-drop-label')) {
+                        that.moveCreature(e.target.getAttribute("data-index"), e);
+                    }
+                });
+            }
+        });
+
+        document.addEventListener("mouseup", function(e){
+            if(e.target.className.includes('creature__drag-and-drop') || e.target.className.includes('creature__drag-and-drop-label')) {
+                that.dropCreature(e.target.getAttribute("data-index"));
+            }
+        });
+
+        
+
+        
 
         // save button
         this.saveButton.addEventListener("click", function(e) {
@@ -265,10 +288,15 @@ class CreatureList {
             '<div class="creature__hp col-2">' + hpDisplay + '</div>' +
             '<div class="creature__ac col-1">' + ac + '</div>' +
             '<div class="creature__conditions col-2">' + conditions + '</div>' +
-            '<div class="creature__buttons col-3">' + 
+            '<div class="creature__buttons col-2">' + 
                 '<button class="creature__edit btn btn-outline-light" data-index="' + index + '">' + 
                     'edit' + 
                 '</button>' + 
+            '</div>' +
+            '<div class="creature__buttons col-1">' + 
+                '<button class="btn btn-link creature__drag-and-drop" data-index="' + index + '">' + 
+                    '<span class="creature__drag-and-drop-label" aria-hidden="true" data-index="' + index + '">⠿</span>' + 
+                '</button>' +
             '</div>' +
         '</div>'
         return li;
@@ -280,6 +308,88 @@ class CreatureList {
                 return a.initiative - b.initiative;
             });
         }
+    }
+
+    dragCreature(index) {
+        console.log('dragCreature()');
+        var creature = this.creatures[index];
+        console.log(creature);
+        var creatureDOM = this.getDOMCreature(index);
+        // this.dragAndDrop['element'] = index;
+        this.dragAndDrop['element'] = index;
+        var originalWidth = creatureDOM.getBoundingClientRect().width;
+        creatureDOM.style.width = originalWidth + "px";
+        creatureDOM.classList.add('dragging');
+
+    }
+
+    dropCreature(index) {
+        console.log('dropCreature()');
+        this.dragAndDrop['element'] = null;
+        this.dragAndDrop['dragging'] = false;
+        this.dragAndDrop['pointerStartY'] = null;
+        var creatureDOM = this.getDOMCreature(index);
+        creatureDOM.classList.remove('dragging');
+        creatureDOM.style.top = 'unset';
+        /*
+        var creature = this.creatures[index];
+        var creatureDOM = this.getDOMCreature(index);
+        creatureDOM.classList.remove('dragging');
+        */
+    }
+
+    moveCreature(index, e) {
+        if(!this.dragAndDrop['element']) return;
+        if (index === this.dragAndDrop['element']) {
+            this.dragAndDrop['dragging'] = true;
+            console.log('ELEMENT' + index + ' IS BEING DRAGGED!');
+            
+            // this.dragAndDrop['element'] = index;
+            //this.dragAndDrop['dragging'] = true;
+
+            var cursorY = e.pageY;
+            var cursorX = e.pageX;
+            var creatureDOM = this.getDOMCreature(index);
+            var creatureY = creatureDOM.getBoundingClientRect().top;
+            var creatureX = creatureDOM.getBoundingClientRect().left;
+            var creatureHeight = creatureDOM.getBoundingClientRect().height;
+            var listY = this.el.getBoundingClientRect().top;
+
+            if(!this.dragAndDrop['pointerStartY']) {
+                this.dragAndDrop['pointerStartY'] = parseInt(cursorY);
+            }
+
+            var deltaYCursor =  cursorY - this.dragAndDrop['pointerStartY'];
+            console.log('deltaY: ' + deltaYCursor);
+
+            // creatureDOM.style.top = (creatureY + deltaYCursor) - listY + 'px';
+            creatureDOM.style.top = cursorY - listY - (creatureHeight / 2) + 'px';
+            
+            /*
+            console.log('========');
+            console.log(creatureY);
+            console.log(cursorY);
+            console.log('========');
+            */
+
+            
+
+        
+            /*
+            creatureDOM.style.top = cursorY + "px";
+            creatureDOM.style.left = cursorX + "px";
+            */
+        }
+    }
+
+    getDOMCreature(index) {
+        var createList = this.el;
+        var creatureDOM = createList.children.item(index);
+        return creatureDOM;
+    }
+
+    getCursorPosition() {
+        
     }
 
     mapArrayToCreature(array){
