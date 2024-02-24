@@ -266,6 +266,10 @@ form#form-creature-new input {
     border-radius: 5px;
 }
 
+.drop-indicator {
+    border: 2px dashed green;
+}
+
 form h2 {
     margin-top: 0;
     margin-bottom: 0.5rem;

@@ -310,8 +310,34 @@ class CreatureList {
         }
     }
 
+    sortManually(indexDragging, indexOverlapping) {
+        if (indexOverlapping !== null) {
+            var creatureDragging = this.creatures[indexDragging];
+            var creatureOverlapping = this.creatures[indexOverlapping];
+
+            if(indexDragging < indexOverlapping) {
+                var newInitiative = creatureOverlapping.initiative;
+                creatureDragging.initiative = newInitiative;
+
+                console.log(this.creatures);
+                this.creatures.splice(indexDragging, 1);
+                console.log(this.creatures.slice(0));
+                this.creatures.splice(Math.max(0, indexOverlapping-1), 0, creatureDragging);
+                console.log(this.creatures.slice(0));
+            }
+            else {
+                var newInitiative = creatureOverlapping.initiative;
+                creatureDragging.initiative = newInitiative;
+                this.creatures.splice(indexDragging, 1);
+                this.creatures.splice(Math.max(0, indexOverlapping), 0, creatureDragging);
+            }
+        }
+
+        this.update();
+    }
+
     dragCreature(index) {
-        console.log('dragCreature()');
+        // console.log('dragCreature()');
         var creature = this.creatures[index];
         console.log(creature);
         var creatureDOM = this.getDOMCreature(index);
@@ -320,17 +346,22 @@ class CreatureList {
         var originalWidth = creatureDOM.getBoundingClientRect().width;
         creatureDOM.style.width = originalWidth + "px";
         creatureDOM.classList.add('dragging');
-
     }
 
     dropCreature(index) {
-        console.log('dropCreature()');
+        // console.log('dropCreature()');
+        
+        var creatureDOM = this.getDOMCreature(index);
+
+        var overlappingDomElement = this.getOverlappingDomElement(parseInt(index), creatureDOM);
+        this.sortManually(parseInt(index), overlappingDomElement);
+
         this.dragAndDrop['element'] = null;
         this.dragAndDrop['dragging'] = false;
         this.dragAndDrop['pointerStartY'] = null;
-        var creatureDOM = this.getDOMCreature(index);
         creatureDOM.classList.remove('dragging');
         creatureDOM.style.top = 'unset';
+
         /*
         var creature = this.creatures[index];
         var creatureDOM = this.getDOMCreature(index);
@@ -342,7 +373,7 @@ class CreatureList {
         if(!this.dragAndDrop['element']) return;
         if (index === this.dragAndDrop['element']) {
             this.dragAndDrop['dragging'] = true;
-            console.log('ELEMENT' + index + ' IS BEING DRAGGED!');
+            // console.log('ELEMENT' + index + ' IS BEING DRAGGED!');
             
             // this.dragAndDrop['element'] = index;
             //this.dragAndDrop['dragging'] = true;
@@ -360,11 +391,15 @@ class CreatureList {
             }
 
             var deltaYCursor =  cursorY - this.dragAndDrop['pointerStartY'];
-            console.log('deltaY: ' + deltaYCursor);
+            // console.log('deltaY: ' + deltaYCursor);
 
             // creatureDOM.style.top = (creatureY + deltaYCursor) - listY + 'px';
             creatureDOM.style.top = cursorY - listY - (creatureHeight / 2) + 'px';
-            
+
+            var overlappingDomElement = this.getOverlappingDomElement(parseInt(index), creatureDOM);
+            // this.addMarginToOverlappingDomElement(overlappingDomElement, creatureHeight);
+
+            console.log('overlappingDomElement: ' + overlappingDomElement);
             /*
             console.log('========');
             console.log(creatureY);
@@ -387,6 +422,50 @@ class CreatureList {
         var creatureDOM = createList.children.item(index);
         return creatureDOM;
     }
+
+    getOverlappingDomElement(indexOfcurrentChild, currentChild) {
+        // console.log('getOverlappingDomElement() - indexOfcurrentChild: ' + indexOfcurrentChild );
+        var children = this.el.children;
+        var overlappingChild = null;
+        for (var i = 0; i < children.length; i++) {
+            if(i !== indexOfcurrentChild && this.areDomElementsOverlapping(currentChild, children[i])) {
+                // console.log('CHILD: ' + i);
+                overlappingChild = i;
+            }
+        }
+        return overlappingChild;
+    }
+
+    areDomElementsOverlapping(element1, element2) {    
+        const rect1 = element1.getBoundingClientRect(); 
+        const rect2 = element2.getBoundingClientRect(); 
+        
+        if (!(rect1.right < rect2.left || 
+            rect1.left > rect2.right ||  
+            rect1.bottom < rect2.top ||  
+            rect1.top > rect2.bottom)
+        ) { 
+            return true;
+        } else { 
+            return false;
+        } 
+    }
+
+    clearStyleOfDomElements() {
+        for (var i = 0; i < children.length; i++) {
+            children[i].style.marginTop = null;
+            children[i].style.marginBottom = null;
+        }
+    }
+
+    /*
+    addDropIndicators(index, draggingDomElement) {
+        var html = document.createElement('div');
+        html.classList.add('drop-indicator');
+        html.style.height = draggingDomElement.getBoundingClientRect().height + 'px';
+        this.el.children.item(index).classList.style.marginTop = margin + 'px';
+    }
+    */
 
     getCursorPosition() {
         
