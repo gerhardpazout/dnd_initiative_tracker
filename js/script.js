@@ -201,7 +201,7 @@ class CreatureList {
             };
         });
 
-        this.el.addEventListener("mousedown", function(e){
+        document.addEventListener("mousedown", function(e){
             if(e.target.className.includes('creature__drag-and-drop') || e.target.className.includes('creature__drag-and-drop-label')) {
                 that.dragCreature(e.target.getAttribute("data-index"));
 
@@ -294,7 +294,7 @@ class CreatureList {
                 '</button>' + 
             '</div>' +
             '<div class="creature__buttons col-1">' + 
-                '<button class="btn btn-link creature__drag-and-drop" data-index="' + index + '">' + 
+                '<button class="btn btn-link creature__drag-and-drop w-100" data-index="' + index + '" tabindex="-1">' + 
                     '<span class="creature__drag-and-drop-label" aria-hidden="true" data-index="' + index + '">⠿</span>' + 
                 '</button>' +
             '</div>' +
