@@ -305,7 +305,7 @@ class CreatureList {
     sort() {
         if(typeof this.creatures !== 'undefined') {
             this.creatures.sort(function (a, b) {
-                return a.initiative - b.initiative;
+                return b.initiative - a.initiative;
             });
         }
     }
