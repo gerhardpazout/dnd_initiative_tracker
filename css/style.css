@@ -111,6 +111,10 @@ input[type="checkbox"] {
     margin-right: 0.5em;
 }
 
+.creature-list {
+    position: relative;
+}
+
 .creature-list li {
     margin-bottom: var(--creature-list-item-margin-bottom);
 }
@@ -243,6 +247,27 @@ form#form-creature-new input {
 .creature-edit label i,
 .creature-edit fieldset legend i {
     margin-right: 0.25rem;
+}
+
+.creature-list .creature__drag-and-drop {
+    text-decoration: none;
+    color: var(--creature-list-color);
+    z-index: 100;
+}
+.creature-list li {
+    position: relative;
+}
+.creature-list li.dragging {
+    position: absolute;
+    z-index: 1000;
+}
+.creature-list li.dragging .creature {
+    border: 2px solid var(--creature-list-color);
+    border-radius: 5px;
+}
+
+.drop-indicator {
+    border: 2px dashed green;
 }
 
 form h2 {
