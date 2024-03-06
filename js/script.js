@@ -65,7 +65,6 @@ class FlashMessageService {
         flashMessagesContainer.appendChild(flashMessage.html());
 
         var flashMessages = flashMessagesContainer.children;
-        console.log(flashMessages);
         const intervalID = setInterval(function (){
             for (let i = 0; i < flashMessages.length; i++) {
                 if(!flashMessages[i].classList.contains("fade")){
@@ -126,7 +125,7 @@ class FileHandler2 {
 
 class CreatureList {
     constructor(json = '') {
-        this.creatures = json.creatures;
+        this.creatures = this.jsonArrayToObjects(json.creatures);
         this.el = document.getElementById('creature-list');
         this.formNew = document.getElementById('form-creature-new');
         this.formEdit = document.getElementById('form-creature-edit');
@@ -151,7 +150,6 @@ class CreatureList {
             evt.preventDefault();
             // code from https://stackoverflow.com/questions/23139876/getting-all-form-values-by-javascript
             var submittedData = Object.fromEntries(new FormData(evt.target));
-            console.log(submittedData);
             var creatureNew = that.mapArrayToCreature(submittedData);
             that.addCreature(creatureNew);
         });
@@ -167,7 +165,6 @@ class CreatureList {
             if(index !== '') {
                 var creatureNew = that.mapArrayToCreature(submittedData); // build updated creature from submitted data
 
-                console.log(submittedData);
                 switch(action) {
                     case "save":
                         that.editCreature(creatureNew, index); // override creature in this.creatures
@@ -219,10 +216,6 @@ class CreatureList {
             }
         });
 
-        
-
-        
-
         // save button
         this.saveButton.addEventListener("click", function(e) {
             that.save();
@@ -243,8 +236,21 @@ class CreatureList {
         this.sendFlashMessage("Finished initiating creature list!", "", SEVERITIES.SUCCESS);
     }
 
+    jsonArrayToObjects(jsonArray) {
+        var objects = [];
+        if(!jsonArray || jsonArray.length <= 0) {
+            return objects;
+        }
+        for(var i = 0; i < jsonArray.length; i++) {
+            var object = Creature.generateFromJson(jsonArray[i]);
+            objects.push(object);
+        }
+        return objects;
+    }
+
     update() {
         this.el.innerHTML = '';
+        console.log(this.creatures);
         this.render();
     }
 
@@ -258,9 +264,9 @@ class CreatureList {
         }
     }
 
-    setCreatures(json) {
+    setCreaturesFromJson(json) {
         if(typeof json.creatures !== 'undefined' && json.creatures !== null && json.creatures !== '') {
-            this.creatures = json.creatures;
+            this.creatures = this.jsonArrayToObjects(json.creatures);
             this.sort();
             this.update();
             this.sendFlashMessage('Creatures imported from JSON!', 'Import success!', SEVERITIES.SUCCESS);
@@ -491,13 +497,13 @@ class CreatureList {
     }
 
     addCreature(creature){
-        this.creatures.push(creature.json());
+        this.creatures.push(creature);
         this.sort();
         this.update();
     }
 
     editCreature(creature, index){
-        this.creatures[index] = creature.json();
+        this.creatures[index] = creature;
         this.sort();
         this.update();
     }
@@ -586,7 +592,7 @@ class CreatureList {
     }
 
     load() {
-        this.creatures = JSON.parse(localStorage.getItem("creatures"));
+        this.creatures = this.jsonArrayToObjects(JSON.parse(localStorage.getItem("creatures")));
         this.sendFlashMessage("Loaded successfully from local storage!", "Loading from local storage", SEVERITIES.SUCCESS);
         this.update();
     }
@@ -625,6 +631,14 @@ class Creature {
         this.conditions = conditions;
     }
 
+    static generateFromJson(json){
+        var creature = new Creature(json.name, json.ac, json.hp, json.hpMax, json.initiative);
+        creature.setIsPlayer(json.isPlayer);
+        creature.setIsCurrent(json.current);
+        creature.setConditions(json.conditions);
+        return creature;
+    }
+
     json() {
         return {
             "name": this.name,
@@ -652,7 +666,7 @@ document.getElementById('json-file').addEventListener('input', () => {
     fileHandler.init();
     
     setTimeout(function(){
-        creatureList.setCreatures(fileHandler.json);
+        creatureList.setCreaturesFromJson(fileHandler.json);
     },500);
     
 });
