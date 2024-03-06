@@ -137,7 +137,8 @@ class CreatureList {
         this.editModal = new bootstrap.Modal(document.getElementById('edit-creature-modal'), {})
         this.current = 0;
         this.flashMessageService = new FlashMessageService();
-        this.dragAndDrop = { "pointerStartX" : null, "pointerStartY" : null, "element" : null, "dragging": false }
+        this.dragAndDrop = { "pointerStartX" : null, "pointerStartY" : null, "element" : null, "dragging": false };
+        this.roundCount = 1;
     }
 
     init() {
@@ -560,8 +561,15 @@ class CreatureList {
         this.creatures[index].current = false;
         if(++index >= this.creatures.length) {
             index = 0;
+            this.roundCount++;
+            for(var i = 0; i < this.creatures.length; i++) {
+                // this.creatures[i].decrementConditions();
+            }
         }
         this.creatures[index].current = true;
+        this.creatures[index].decrementConditions();
+
+        console.log("Round: " + this.roundCount);
         this.update();
     }
 
@@ -570,8 +578,14 @@ class CreatureList {
         this.creatures[index].current = false;
         if(--index < 0) {
             index = this.creatures.length - 1;
+            this.roundCount--;
+            for(var i = 0; i < this.creatures.length; i++) {
+                // this.creatures[i].incrementConditions();
+            }
         }
         this.creatures[index].current = true;
+        this.creatures[index].incrementConditions();
+        console.log("Round: " + this.roundCount);
         this.update();
     }
 
@@ -629,6 +643,57 @@ class Creature {
 
     setConditions(conditions) {
         this.conditions = conditions;
+    }
+
+    conditionsAsJson() {
+        var str = this.conditions;
+        if(!str || str === '') return [];
+        var conditionsRaw = str.split(',').map(function(item) {
+            return item.trim();
+        });
+        var conditions = [];
+        for (var i = 0; i < conditionsRaw.length; i++) {
+            var name = conditionsRaw[i];
+            var duration = null;
+            var hasDuration = (conditionsRaw[i].indexOf("(") > -1)? true : false;
+            console.log(hasDuration);
+            if(hasDuration) {
+                name = conditionsRaw[i].substring(0, conditionsRaw[i].indexOf("(")).trim();
+                duration = parseInt(conditionsRaw[i].substring(conditionsRaw[i].indexOf("(") + 1, conditionsRaw[i].indexOf(")")));
+            }
+            var condition = {"name" : name, "duration" : duration};
+            conditions.push(condition);
+        }
+        return conditions;
+
+    }
+
+    conditionsJsonToString(conditions) {
+        var str = "";
+        for(var i = 0; i < conditions.length; i++) {
+            str += conditions[i].name;
+            if (conditions[i].duration !== null) str += " (" + conditions[i].duration + ")";
+            if (i < conditions.length - 1) str += ", ";
+        }
+        this.conditions = str;
+    }
+
+    decrementConditions() {
+        var conditionsNew = [];
+        var json = this.conditionsAsJson();
+        for(var i = 0; i < json.length; i++) {
+            if(json[i].duration !== null) json[i].duration--;
+            if(json[i].duration == null || json[i].duration > 0) conditionsNew.push(json[i]);
+        }
+        this.conditionsJsonToString(conditionsNew);
+    }
+
+    incrementConditions() {
+        var json = this.conditionsAsJson();
+        for(var i = 0; i < json.length; i++) {
+            if(json[i].duration !== null) json[i].duration++;
+        }
+        this.conditionsJsonToString(json);
     }
 
     static generateFromJson(json){
