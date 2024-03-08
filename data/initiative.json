@@ -3,26 +3,32 @@
         {
             "name": "Haldir",
             "hpMax": 22,
-            "damaged": 2,
+            "hp": 20,
             "ac": 15,
             "isPlayer": true,
-            "initiative": 17
+            "initiative": 17,
+            "current": false,
+            "conditions": ""
         },
         {
             "name": "Ladyium",
             "hpMax": 28,
-            "damaged": 6,
+            "hp": 26,
             "ac": 14,
             "isPlayer": true,
-            "initiative": 6
+            "initiative": 6,
+            "current": true,
+            "conditions": ""
         },
         {
             "name": "Bandit",
             "hpMax": null,
-            "damaged": 2,
-            "ac": null,
+            "hp": -2,
+            "ac": 12,
             "isPlayer": false,
-            "initiative": 15
+            "initiative": 15,
+            "current": false,
+            "conditions": "restrained"
         }
     ]
 }
