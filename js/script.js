@@ -680,59 +680,6 @@ class Creature {
         return CreatureUtils.conditionsToString(this.conditions);
     }
 
-    /*
-    conditionsAsJson() {
-        var str = this.conditions;
-        if(!str || str === '') return [];
-        var conditionsRaw = str.split(',').map(function(item) {
-            return item.trim();
-        });
-        var conditions = [];
-        for (var i = 0; i < conditionsRaw.length; i++) {
-            var name = conditionsRaw[i];
-            var duration = null;
-            var hasDuration = (conditionsRaw[i].indexOf("(") > -1)? true : false;
-            console.log(hasDuration);
-            if(hasDuration) {
-                name = conditionsRaw[i].substring(0, conditionsRaw[i].indexOf("(")).trim();
-                duration = parseInt(conditionsRaw[i].substring(conditionsRaw[i].indexOf("(") + 1, conditionsRaw[i].indexOf(")")));
-            }
-            var condition = {"name" : name, "duration" : duration};
-            conditions.push(condition);
-        }
-        return conditions;
-
-    }
-
-    conditionsJsonToString(conditions) {
-        var str = "";
-        for(var i = 0; i < conditions.length; i++) {
-            str += conditions[i].name;
-            if (conditions[i].duration !== null) str += " (" + conditions[i].duration + ")";
-            if (i < conditions.length - 1) str += ", ";
-        }
-        this.conditions = str;
-    }
-
-    decrementConditions() {
-        var conditionsNew = [];
-        var json = this.conditionsAsJson();
-        for(var i = 0; i < json.length; i++) {
-            if(json[i].duration !== null) json[i].duration--;
-            if(json[i].duration == null || json[i].duration > 0) conditionsNew.push(json[i]);
-        }
-        this.conditionsJsonToString(conditionsNew);
-    }
-
-    incrementConditions() {
-        var json = this.conditionsAsJson();
-        for(var i = 0; i < json.length; i++) {
-            if(json[i].duration !== null) json[i].duration++;
-        }
-        this.conditionsJsonToString(json);
-    }
-    */
-
     static generateFromJson(json){
         var creature = new Creature(json.name, json.ac, json.hp, json.hpMax, json.initiative);
         creature.setIsPlayer(json.isPlayer);
