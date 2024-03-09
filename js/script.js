@@ -125,7 +125,12 @@ class FileHandler2 {
 
 class CreatureList {
     constructor(json = '') {
-        this.creatures = this.jsonArrayToObjects(json.creatures);
+        this.data = {};
+        this.data.creatures = this.jsonArrayToObjects(json.creatures);
+        this.data.round = 1;
+        this.elements = {
+            round: document.getElementById('round-count')
+        }
         this.el = document.getElementById('creature-list');
         this.formNew = document.getElementById('form-creature-new');
         this.formEdit = document.getElementById('form-creature-edit');
@@ -138,7 +143,6 @@ class CreatureList {
         this.current = 0;
         this.flashMessageService = new FlashMessageService();
         this.dragAndDrop = { "pointerStartX" : null, "pointerStartY" : null, "element" : null, "dragging": false };
-        this.roundCount = 1;
     }
 
     init() {
@@ -168,7 +172,7 @@ class CreatureList {
 
                 switch(action) {
                     case "save":
-                        that.editCreature(creatureNew, index); // override creature in this.creatures
+                        that.editCreature(creatureNew, index); // override creature in this.data.creatures
                         that.editModal.hide();
                         break;
                     case "delete":
@@ -250,15 +254,16 @@ class CreatureList {
     }
 
     update() {
+        this.elements.round.innerHTML = this.data.round;
         this.el.innerHTML = '';
-        console.log(this.creatures);
+        console.log(this.data.creatures);
         this.render();
     }
 
     render() {
-        if(Array.isArray(this.creatures) && this.creatures.length > 0) {
-            for (var i = 0; i <= this.creatures.length-1; i++) {
-                var creature = this.creatures[i];
+        if(Array.isArray(this.data.creatures) && this.data.creatures.length > 0) {
+            for (var i = 0; i <= this.data.creatures.length-1; i++) {
+                var creature = this.data.creatures[i];
                 var li = this.generateHtmlForCreature(creature, i);
                 this.el.appendChild(li);
             }
@@ -267,7 +272,8 @@ class CreatureList {
 
     setCreaturesFromJson(json) {
         if(typeof json.creatures !== 'undefined' && json.creatures !== null && json.creatures !== '') {
-            this.creatures = this.jsonArrayToObjects(json.creatures);
+            this.data = json;
+            this.data.creatures = this.jsonArrayToObjects(json.creatures);
             this.sort();
             this.update();
             this.sendFlashMessage('Creatures imported from JSON!', 'Import success!', SEVERITIES.SUCCESS);
@@ -310,8 +316,8 @@ class CreatureList {
     }
 
     sort() {
-        if(typeof this.creatures !== 'undefined') {
-            this.creatures.sort(function (a, b) {
+        if(typeof this.data.creatures !== 'undefined') {
+            this.data.creatures.sort(function (a, b) {
                 return b.initiative - a.initiative;
             });
         }
@@ -319,24 +325,24 @@ class CreatureList {
 
     sortManually(indexDragging, indexOverlapping) {
         if (indexOverlapping !== null) {
-            var creatureDragging = this.creatures[indexDragging];
-            var creatureOverlapping = this.creatures[indexOverlapping];
+            var creatureDragging = this.data.creatures[indexDragging];
+            var creatureOverlapping = this.data.creatures[indexOverlapping];
 
             if(indexDragging < indexOverlapping) {
                 var newInitiative = creatureOverlapping.initiative;
                 creatureDragging.initiative = newInitiative;
 
-                console.log(this.creatures);
-                this.creatures.splice(indexDragging, 1);
-                console.log(this.creatures.slice(0));
-                this.creatures.splice(Math.max(0, indexOverlapping-1), 0, creatureDragging);
-                console.log(this.creatures.slice(0));
+                console.log(this.data.creatures);
+                this.data.creatures.splice(indexDragging, 1);
+                console.log(this.data.creatures.slice(0));
+                this.data.creatures.splice(Math.max(0, indexOverlapping-1), 0, creatureDragging);
+                console.log(this.data.creatures.slice(0));
             }
             else {
                 var newInitiative = creatureOverlapping.initiative;
                 creatureDragging.initiative = newInitiative;
-                this.creatures.splice(indexDragging, 1);
-                this.creatures.splice(Math.max(0, indexOverlapping), 0, creatureDragging);
+                this.data.creatures.splice(indexDragging, 1);
+                this.data.creatures.splice(Math.max(0, indexOverlapping), 0, creatureDragging);
             }
         }
 
@@ -345,7 +351,7 @@ class CreatureList {
 
     dragCreature(index) {
         // console.log('dragCreature()');
-        var creature = this.creatures[index];
+        var creature = this.data.creatures[index];
         console.log(creature);
         var creatureDOM = this.getDOMCreature(index);
         // this.dragAndDrop['element'] = index;
@@ -370,7 +376,7 @@ class CreatureList {
         creatureDOM.style.top = 'unset';
 
         /*
-        var creature = this.creatures[index];
+        var creature = this.data.creatures[index];
         var creatureDOM = this.getDOMCreature(index);
         creatureDOM.classList.remove('dragging');
         */
@@ -498,26 +504,26 @@ class CreatureList {
     }
 
     addCreature(creature){
-        this.creatures.push(creature);
+        this.data.creatures.push(creature);
         this.sort();
         this.update();
     }
 
     editCreature(creature, index){
-        this.creatures[index] = creature;
+        this.data.creatures[index] = creature;
         this.sort();
         this.update();
     }
 
     deleteCreature(index) {
         // to get removed item just add "var removed = " at beginning of next line.
-        this.creatures.splice(index, 1);
+        this.data.creatures.splice(index, 1);
         this.sort();
         this.update();
     }
 
     fillEditForm(index) {
-        var creature = this.creatures[index];
+        var creature = this.data.creatures[index];
         
         this.formEdit.elements["index"].value = index;
         this.formEdit.elements["initiative"].value = creature.initiative;
@@ -549,7 +555,7 @@ class CreatureList {
     }
 
     getIndexOfCurrentCreature(){
-        var index = this.creatures.findIndex(function (creature) {
+        var index = this.data.creatures.findIndex(function (creature) {
             return creature.current === true;
         });
         if(index === -1) return 0;
@@ -558,34 +564,34 @@ class CreatureList {
 
     incrementTurn(){
         var index = this.getIndexOfCurrentCreature();
-        this.creatures[index].current = false;
-        if(++index >= this.creatures.length) {
+        this.data.creatures[index].current = false;
+        if(++index >= this.data.creatures.length) {
             index = 0;
-            this.roundCount++;
-            for(var i = 0; i < this.creatures.length; i++) {
-                // this.creatures[i].decrementConditions();
+            this.data.round++;
+            for(var i = 0; i < this.data.creatures.length; i++) {
+                // this.data.creatures[i].decrementConditions();
             }
         }
-        this.creatures[index].current = true;
-        this.creatures[index].decrementConditions();
+        this.data.creatures[index].current = true;
+        this.data.creatures[index].decrementConditions();
 
-        console.log("Round: " + this.roundCount);
+        console.log("Round: " + this.data.round);
         this.update();
     }
 
     decrementTurn(){
         var index = this.getIndexOfCurrentCreature();
-        this.creatures[index].current = false;
+        this.data.creatures[index].current = false;
         if(--index < 0) {
-            index = this.creatures.length - 1;
-            this.roundCount--;
-            for(var i = 0; i < this.creatures.length; i++) {
-                // this.creatures[i].incrementConditions();
+            index = this.data.creatures.length - 1;
+            this.data.round--;
+            for(var i = 0; i < this.data.creatures.length; i++) {
+                // this.data.creatures[i].incrementConditions();
             }
         }
-        this.creatures[index].current = true;
-        this.creatures[index].incrementConditions();
-        console.log("Round: " + this.roundCount);
+        this.data.creatures[index].current = true;
+        this.data.creatures[index].incrementConditions();
+        console.log("Round: " + this.data.round);
         this.update();
     }
 
@@ -601,12 +607,14 @@ class CreatureList {
     }
 
     save() {
-        localStorage.setItem("creatures", JSON.stringify(this.creatures));
+        localStorage.setItem("dndTracker", JSON.stringify(this.data));
         this.sendFlashMessage("Saved successfully to local storage!", "Saving to local storage", SEVERITIES.SUCCESS);
     }
 
     load() {
-        this.creatures = this.jsonArrayToObjects(JSON.parse(localStorage.getItem("creatures")));
+        var rawData = JSON.parse(localStorage.getItem("dndTracker"));
+        this.data = rawData;
+        this.data.creatures = this.jsonArrayToObjects(rawData.creatures);
         this.sendFlashMessage("Loaded successfully from local storage!", "Loading from local storage", SEVERITIES.SUCCESS);
         this.update();
     }
