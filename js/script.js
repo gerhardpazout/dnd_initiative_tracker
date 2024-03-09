@@ -486,7 +486,7 @@ class CreatureList {
         var ac = parseInt(array['ac']);
         var initiative = parseInt(array['initiative']);
         var current = (array['current'].toLowerCase() === 'true');
-        var conditions = (array['conditions'])? array['conditions'] : '';
+        var conditions = (array['conditions'])? ConditionUtils.stringToJson(array['conditions']) : [];
         var isPlayer = (array['isPlayer'])? (array['isPlayer'].toLowerCase() === 'true') : false;
 
         var creature = new Creature(name, ac, hp, hpMax, initiative);
@@ -527,7 +527,7 @@ class CreatureList {
         this.formEdit.elements["damaged"].value = creature.damaged;
         this.formEdit.elements["ac"].value = creature.ac;
         this.formEdit.elements["isPlayer"].checked = creature.isPlayer;
-        this.formEdit.elements["conditions"].value = creature.conditions;
+        this.formEdit.elements["conditions"].value = creature.conditionsToString();
         this.formEdit.elements["current"].value = creature.current;
     }
 
@@ -616,8 +616,8 @@ class CreatureList {
     }
 }
 
-class CreatureUtils {
-    static conditionsToString(conditions) {
+class ConditionUtils {
+    static jsonToString(conditions) {
         var str = "";
         for(var i = 0; i < conditions.length; i++) {
             var condition = conditions[i];
@@ -626,6 +626,29 @@ class CreatureUtils {
             if (i < conditions.length - 1) str += ", ";
         }
         return str;
+    }
+
+    static stringToJson(str) {
+        if(!str || str === '') return [];
+        // split comma separated string into array
+        var conditionsRaw = str.split(',').map(function(item) {
+            return item.trim();
+        });
+        var conditions = []; // array, will be filled with conditions as json {name, duration}
+        for (var i = 0; i < conditionsRaw.length; i++) {
+            var name = conditionsRaw[i];
+            var duration = null;
+            var hasDuration = (conditionsRaw[i].indexOf("(") > -1)? true : false;
+            console.log(hasDuration);
+            if(hasDuration) {
+                name = conditionsRaw[i].substring(0, conditionsRaw[i].indexOf("(")).trim();
+                duration = parseInt(conditionsRaw[i].substring(conditionsRaw[i].indexOf("(") + 1, conditionsRaw[i].indexOf(")")));
+            }
+            var condition = {"name" : name, "duration" : duration};
+            conditions.push(condition);
+        }
+        return conditions;
+
     }
 }
 
@@ -677,7 +700,7 @@ class Creature {
     }
 
     conditionsToString() {
-        return CreatureUtils.conditionsToString(this.conditions);
+        return ConditionUtils.jsonToString(this.conditions);
     }
 
     static generateFromJson(json){
