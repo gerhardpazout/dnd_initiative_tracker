@@ -286,7 +286,7 @@ class CreatureList {
         var hp = (isNaN(creature.hp) || creature.hp === null)? 0 : creature.hp;
         var hpDisplay = (creature.isPlayer)? '' + hp + '/' + hpMax : hp;
         var ac = (creature.isPlayer)? creature.ac : '';
-        var conditions = (creature.conditions)? creature.conditions : '';
+        var conditions = (creature.conditions)? creature.conditionsToString() : '';
 
         li.innerHTML = 
         '<div class="creature row" data-current="' + creature.current + '">' + 
@@ -616,6 +616,19 @@ class CreatureList {
     }
 }
 
+class CreatureUtils {
+    static conditionsToString(conditions) {
+        var str = "";
+        for(var i = 0; i < conditions.length; i++) {
+            var condition = conditions[i];
+            str += condition.name;
+            if (condition.duration !== null) str += " (" + condition.duration + ")";
+            if (i < conditions.length - 1) str += ", ";
+        }
+        return str;
+    }
+}
+
 class Creature {
     constructor(name, ac, hp, hpMax, initiative) {
         this.name = name;
@@ -645,6 +658,29 @@ class Creature {
         this.conditions = conditions;
     }
 
+    decrementConditions() {
+        var conditionsNew = [];
+        for(var i = 0; i < this.conditions.length; i++) {
+            if(this.conditions[i].duration !== null) this.conditions[i].duration--;
+            if(this.conditions[i].duration == null || this.conditions[i].duration > 0) conditionsNew.push(this.conditions[i]);
+        }
+        this.conditions = conditionsNew;
+    }
+    /**
+     * Basically just serves as a undo function for now.
+     * A propper undo function will be added at some point, by which this method will be rendered obsolete.
+     */
+    incrementConditions() {
+        for(var i = 0; i < this.conditions.length; i++) {
+            if(this.conditions[i].duration !== null) this.conditions[i].duration++;
+        }
+    }
+
+    conditionsToString() {
+        return CreatureUtils.conditionsToString(this.conditions);
+    }
+
+    /*
     conditionsAsJson() {
         var str = this.conditions;
         if(!str || str === '') return [];
@@ -695,6 +731,7 @@ class Creature {
         }
         this.conditionsJsonToString(json);
     }
+    */
 
     static generateFromJson(json){
         var creature = new Creature(json.name, json.ac, json.hp, json.hpMax, json.initiative);
