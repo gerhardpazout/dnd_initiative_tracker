@@ -1,24 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-class File {
-    constructor(file) {
-        this.originalFile = file;
-        this.content = null;
-        this.extension =  this.getFileExtensionFromFile(file);
-    }
-
-    name(){
-        return this.file.name;
-    }
-    getFileExtensionFromFile(file) {
-        return file.name.split('.').pop().toLowerCase();
-    }
-
-    getOriginalFile() {
-        this.originalFile = file;
-    }
-}
-
 const SEVERITIES = {
     INFO: "info",
     SUCCESS: "success",
@@ -103,6 +84,13 @@ class FileHandler2 {
 
     }
 
+    /**
+     * Parses the given file into its corresponding format (e.g. JSON, XML, etc.)
+     * Currently only JSON formatted files are supporded!
+     * If the file does not have the JSON format an error flash message will be generated
+     * 
+     * @returns void
+     */
     parseFile() {
         switch(this.file.type) {
             case "application/json":
@@ -114,18 +102,36 @@ class FileHandler2 {
         }
     }
 
+   /**
+     * Parses the given file into JSON format
+     * 
+     * @returns void
+     */
     parseJSON() {  
         this.json = JSON.parse(this.content);
     }
 
+    /**
+     * Generates a flash message and adds it to the respective div container inside the DOM
+     * using FlashMessageService
+     * 
+     * @param {string} message 
+     * @param {string} header 
+     * @param {string} severity 
+     */
     sendFlashMessage(message, header = '', severity = SEVERITIES.INFO) {
         this.flashMessageService.sendFlashMessage(message, header, severity);
     }
 }
 
+/**
+ * The CreatureList is the main part of this webapp!
+ * It entails: the data (creatures, current round, etc.),
+ * logic for adding, editing & rearranging creatures and much more!
+ */
 class CreatureList {
     constructor(json = '') {
-        this.data = {};
+        this.data = {}; // holds all the data required to run creature list (creatures, round count, etc.)
         this.data.creatures = this.jsonArrayToObjects(json.creatures);
         this.data.round = 1;
         this.elements = {
@@ -145,12 +151,16 @@ class CreatureList {
         this.dragAndDrop = { "pointerStartX" : null, "pointerStartY" : null, "element" : null, "dragging": false };
     }
 
+    /**
+     * Initializes the CreateList. 
+     * This function must be called first and foremost before doing anything else!
+    */
     init() {
         this.sendFlashMessage("Initiating Creature List...", "", SEVERITIES.SUCCESS);
         this.sort()
         var that = this;
 
-        // Process 'new' form
+        // Add listener for processing 'new' form
         this.formNew.addEventListener("submit", function(evt) {
             evt.preventDefault();
             // code from https://stackoverflow.com/questions/23139876/getting-all-form-values-by-javascript
@@ -159,7 +169,7 @@ class CreatureList {
             that.addCreature(creatureNew);
         });
 
-        // Process 'edit' form
+        // Add listener for processing 'edit' form
         this.formEdit.addEventListener("submit", function(evt) {
             evt.preventDefault();
 
@@ -185,17 +195,17 @@ class CreatureList {
             that.clearEditForm();
         });
 
-        // Next turn
+        // Add listener for next turn action
         this.nextTurn.addEventListener("click", function(e) {
             that.incrementTurn();
         });
 
-        // Previous turn
+        // Add listener for previous turn action
         this.prevTurn.addEventListener("click", function(e) {
             that.decrementTurn();
         });
         
-        // Button for editing creature (fill 'edit' form)
+        // Add listener to button for editing creature (fills 'edit' form)
         document.addEventListener("click", function(e){
             if(e.target.className.includes('creature__edit') ) {
                 that.fillEditForm(e.target.getAttribute("data-index"));
@@ -203,6 +213,7 @@ class CreatureList {
             };
         });
 
+        // Add listener for drag action (mousedown)
         document.addEventListener("mousedown", function(e){
             if(e.target.className.includes('creature__drag-and-drop') || e.target.className.includes('creature__drag-and-drop-label')) {
                 that.dragCreature(e.target.getAttribute("data-index"));
@@ -215,32 +226,39 @@ class CreatureList {
             }
         });
 
+        // Add listener for drop action (mouseup)
         document.addEventListener("mouseup", function(e){
             if(e.target.className.includes('creature__drag-and-drop') || e.target.className.includes('creature__drag-and-drop-label')) {
                 that.dropCreature(e.target.getAttribute("data-index"));
             }
         });
 
-        // save button
+        // Add listener for saving button
         this.saveButton.addEventListener("click", function(e) {
             that.save();
         });
 
-        // load button
+        // Add listener for loading button
         this.loadButton.addEventListener("click", function(e) {
             that.load();
             that.clearFileUploadField();
         });
 
-        // initialize listeners for keyboard events
+        // Initialize listeners for keyboard events
         this.initKeys();
 
         // render the list of creatures
         this.render();
 
+        // Send a flash message so users now that the initalization is finished
         this.sendFlashMessage("Finished initiating creature list!", "", SEVERITIES.SUCCESS);
     }
 
+    /**
+     * Transforms a json array of creatures to an array of actual creature objects
+     * @param {array<string>} jsonArray 
+     * @returns {array<Creature>}
+     */
     jsonArrayToObjects(jsonArray) {
         var objects = [];
         if(!jsonArray || jsonArray.length <= 0) {
@@ -253,6 +271,11 @@ class CreatureList {
         return objects;
     }
 
+    /**
+     * Updates round count and list of creatures in DOM
+     * 
+     * @returns void
+     */
     update() {
         this.elements.round.innerHTML = this.data.round;
         this.el.innerHTML = '';
@@ -260,6 +283,11 @@ class CreatureList {
         this.render();
     }
 
+    /**
+     * Renders the list of creatures by adding them into the respective DOM element
+     * 
+     * @returns void
+     */
     render() {
         if(Array.isArray(this.data.creatures) && this.data.creatures.length > 0) {
             for (var i = 0; i <= this.data.creatures.length-1; i++) {
@@ -270,6 +298,12 @@ class CreatureList {
         }
     }
 
+    /**
+     * Generates creature list from json
+     * 
+     * @param {string} json 
+     * @returns void
+     */
     setCreaturesFromJson(json) {
         if(typeof json.creatures !== 'undefined' && json.creatures !== null && json.creatures !== '') {
             this.data = json;
@@ -283,6 +317,13 @@ class CreatureList {
         }
     }
 
+    /**
+     * Generates html for a specific creature from the creature array
+     * 
+     * @param {Creature} creature 
+     * @param {number} index 
+     * @returns html as string
+     */
     generateHtmlForCreature(creature, index) {
         var li = document.createElement('li');
         // var hp = (creature.isPlayer)? creature.hpMax - creature.damaged : creature.damaged;
@@ -315,6 +356,9 @@ class CreatureList {
         return li;
     }
 
+    /**
+     * Sorts creature array by initiative values
+     */
     sort() {
         if(typeof this.data.creatures !== 'undefined') {
             this.data.creatures.sort(function (a, b) {
@@ -323,6 +367,12 @@ class CreatureList {
         }
     }
 
+    /**
+     * Manually sorts creatures (used for drag and drop feature)
+     * 
+     * @param {number} indexDragging 
+     * @param {number} indexOverlapping 
+    */
     sortManually(indexDragging, indexOverlapping) {
         if (indexOverlapping !== null) {
             var creatureDragging = this.data.creatures[indexDragging];
@@ -349,6 +399,10 @@ class CreatureList {
         this.update();
     }
 
+    /**
+     * Drags a creature in the view 
+     * @param index index of the creature to be dragged in the creature array
+     */
     dragCreature(index) {
         // console.log('dragCreature()');
         var creature = this.data.creatures[index];
@@ -361,6 +415,10 @@ class CreatureList {
         creatureDOM.classList.add('dragging');
     }
 
+    /**
+     * Drops a creature in the view 
+     * @param index index of the creature to be dropped in the creature array
+     */
     dropCreature(index) {
         // console.log('dropCreature()');
         
@@ -382,6 +440,10 @@ class CreatureList {
         */
     }
 
+    /**
+     * Moves a creature in the view 
+     * @param index index of the creature to be moved in the creature array
+     */
     moveCreature(index, e) {
         if(!this.dragAndDrop['element']) return;
         if (index === this.dragAndDrop['element']) {
@@ -430,12 +492,25 @@ class CreatureList {
         }
     }
 
+    /**
+     * Get a creature as a DOM element from the DOM tree
+     * 
+     * @param {number} index 
+     * @returns DOM element
+     */
     getDOMCreature(index) {
         var createList = this.el;
         var creatureDOM = createList.children.item(index);
         return creatureDOM;
     }
 
+    /**
+     * Get the first DOM element that is overlapping with another given DOM element
+     * 
+     * @todo simplify code (reduce parameters and put function in helper class)
+     * @param {number} currentChild index of current child
+     * @param {number} indexOfcurrentChild current child
+     */
     getOverlappingDomElement(indexOfcurrentChild, currentChild) {
         // console.log('getOverlappingDomElement() - indexOfcurrentChild: ' + indexOfcurrentChild );
         var children = this.el.children;
@@ -449,6 +524,13 @@ class CreatureList {
         return overlappingChild;
     }
 
+    /**
+     * Checks if 2 given dom elements are overlapping
+     * 
+     * @param element1 dom element 1 
+     * @param element2 dom element 2
+     * @returnss void
+     */
     areDomElementsOverlapping(element1, element2) {    
         const rect1 = element1.getBoundingClientRect(); 
         const rect2 = element2.getBoundingClientRect(); 
@@ -464,26 +546,13 @@ class CreatureList {
         } 
     }
 
-    clearStyleOfDomElements() {
-        for (var i = 0; i < children.length; i++) {
-            children[i].style.marginTop = null;
-            children[i].style.marginBottom = null;
-        }
-    }
-
-    /*
-    addDropIndicators(index, draggingDomElement) {
-        var html = document.createElement('div');
-        html.classList.add('drop-indicator');
-        html.style.height = draggingDomElement.getBoundingClientRect().height + 'px';
-        this.el.children.item(index).classList.style.marginTop = margin + 'px';
-    }
-    */
-
-    getCursorPosition() {
-        
-    }
-
+    /**
+     * Generates an instance of Create class from given array of attributes
+     * (used for turning form data into creatures)
+     * 
+     * @param {string[]} array array of attributes
+     * @returns Creature
+     */
     mapArrayToCreature(array){
         var name = array['name'];
         var hp = parseInt(array['hp']);
@@ -503,18 +572,38 @@ class CreatureList {
         return creature;
     }
 
+    /**
+     * Adds an instance of type Creature to the CreatureLists' array of creatures
+     * 
+     * @param {Creature} creature 
+     * @returns void
+     */
     addCreature(creature){
         this.data.creatures.push(creature);
         this.sort();
         this.update();
     }
 
+    /**
+     * Overrides the creature at a given index of the CreatureLists' array of creatures
+     * 
+     * @param {Creature} creature new creature to replace the old one with
+     * @param {number} index index to override
+     * @returns void
+     */
     editCreature(creature, index){
         this.data.creatures[index] = creature;
         this.sort();
         this.update();
     }
 
+    /**
+     * Removes an element of the CreatureLists' array of creatures completely.
+     * (the array will be spliced and thus shortened by one element)
+     * 
+     * @param {number} index index of the creature to delete
+     * @returns void
+     */
     deleteCreature(index) {
         // to get removed item just add "var removed = " at beginning of next line.
         this.data.creatures.splice(index, 1);
@@ -522,6 +611,12 @@ class CreatureList {
         this.update();
     }
 
+    /**
+     * Fills out all the input fields of the edit form with the values of a creature
+     * 
+     * @param {*} index index of the desired creature from the CreateList's array of creatures
+     * @returns void
+     */
     fillEditForm(index) {
         var creature = this.data.creatures[index];
         
@@ -537,6 +632,11 @@ class CreatureList {
         this.formEdit.elements["current"].value = creature.current;
     }
 
+    /**
+     * Clears all the input fields of the edit form
+     * 
+     * @returns void
+     */
     clearEditForm(){
         this.formEdit.elements["index"].value = '';
         this.formEdit.elements["initiative"].value = '';
@@ -550,10 +650,20 @@ class CreatureList {
         this.formEdit.elements["current"].value = false;
     }
 
+    /**
+     * Clears the file input field thats responsible for importing creatures via a file
+     * 
+     * @returns void
+     */
     clearFileUploadField() {
         this.fileUploadField.value = "";
     }
 
+    /**
+     * Returns the index of the creature that is taking the current turn
+     * 
+     * @returns void
+     */
     getIndexOfCurrentCreature(){
         var index = this.data.creatures.findIndex(function (creature) {
             return creature.current === true;
@@ -562,6 +672,11 @@ class CreatureList {
         return index;
     }
 
+    /**
+     * Sets the current turn to the next creature and increaes the round count if neccessary
+     * 
+     * @returns void
+     */
     incrementTurn(){
         var index = this.getIndexOfCurrentCreature();
         this.data.creatures[index].current = false;
@@ -579,6 +694,12 @@ class CreatureList {
         this.update();
     }
 
+    /**
+     * Sets the current turn to the previous creature and increaes the round count if neccessary
+     * 
+     * @todo replace with "undo" feature in the future, once "undo" feature has been implemented
+     * @returns void
+     */
     decrementTurn(){
         var index = this.getIndexOfCurrentCreature();
         this.data.creatures[index].current = false;
@@ -595,6 +716,11 @@ class CreatureList {
         this.update();
     }
 
+    /**
+     * Initializes keyboard shortcuts for controling the CreaureList
+     * 
+     * @returns void
+     */
     initKeys(){
         var that = this;
         document.addEventListener("keydown", function(e){
@@ -606,11 +732,21 @@ class CreatureList {
         });
     }
 
+    /**
+     * Saves the current state of the CreatureList into the local storage
+     * 
+     * @returns void
+     */
     save() {
         localStorage.setItem("dndTracker", JSON.stringify(this.data));
         this.sendFlashMessage("Saved successfully to local storage!", "Saving to local storage", SEVERITIES.SUCCESS);
     }
 
+    /**
+     * Loads the last saved state of the CreatureList from the local storage
+     * 
+     * @returns void
+     */
     load() {
         var rawData = JSON.parse(localStorage.getItem("dndTracker"));
         this.data = rawData;
@@ -619,12 +755,30 @@ class CreatureList {
         this.update();
     }
 
+    /**
+     * Sends a FlashMessage to the view
+     * @param {string} message content of the message
+     * @param {string} header optional header of the message
+     * @param {string} severity severity of the message
+     * @returns void
+     */
     sendFlashMessage(message, header = '', severity = SEVERITIES.INFO) {
         this.flashMessageService.sendFlashMessage(message, header, severity);
     }
 }
 
+/**
+ * Helper class for a creatures conditions (e.g. restrained, burning, bleeding, etc.)
+ */
 class ConditionUtils {
+
+    /**
+     * Generates a string from JSON formatted conditions.
+     * Used for rendering conditions in list view and edit form
+     * 
+     * @param {JSON} conditions 
+     * @returns string
+     */
     static jsonToString(conditions) {
         var str = "";
         for(var i = 0; i < conditions.length; i++) {
@@ -636,6 +790,13 @@ class ConditionUtils {
         return str;
     }
 
+    /**
+     * Generates JSON from string formatted conditions.
+     * Used for saving conditions after editing a creature
+     * 
+     * @param {JSON} conditions 
+     * @returns string
+     */
     static stringToJson(str) {
         if(!str || str === '') return [];
         // split comma separated string into array
@@ -660,11 +821,26 @@ class ConditionUtils {
     }
 }
 
+/**
+ * Creature class used for playable and non-playable characters
+ */
 class Creature {
+
+    /**
+     * Constructor of Creature class
+     * 
+     * @todo add overridable hpMax for buffs (e.g. add 3 to hpMax or remove 3 from hpMax)
+     * @todo remove attribute "damaged" from class
+     * @param {string} name name of the creature
+     * @param {number} ac armor class
+     * @param {number} hp hit points
+     * @param {number} hpMax maximum hit points
+     * @param {number} initiative initiative
+     */
     constructor(name, ac, hp, hpMax, initiative) {
         this.name = name;
         this.ac = ac;
-        this.damaged = 0; // deprecated field, TODO: remove
+        this.damaged = 0; // deprecated field, @TODO: remove
         this.hp = hp;
         this.hpMax = hpMax;
         this.initiative = initiative;
@@ -673,22 +849,53 @@ class Creature {
         this.conditions = '';
     }
 
+    /**
+     * Set if you want this creature to be a player or not.
+     * If the creature is not a player it will be rendered differently in the CreateList (hpMax and ac will not be shown then)
+     * 
+     * @param {boolean} isPlayer boolean
+     * @returns void
+     */
     setIsPlayer(isPlayer) {
         this.isPlayer = isPlayer;
     }
 
+    /**
+     * Sets the "current" flag for this creature, 
+     * used in CreatureList to render visible indicators to tell what creature has the current turn
+     * 
+     * @param {boolean} current boolean
+     * @returns void
+     */
     setIsCurrent(current) {
         this.current = current;
     }
 
+    /**
+     * @deprecated
+     * @todo remove! 
+     */
     setDamaged(damaged) {
         this.damaged = damaged;
     }
 
+    /**
+     * Sets the conditions of the creature from given JSON-formatted conditions
+     * 
+     * @param {JSON} current JSON
+     * @returns void
+     */
     setConditions(conditions) {
         this.conditions = conditions;
     }
 
+     /**
+     * Decrements all conditions of the creature that have a duration other than NULL
+     * E.g. if a creature has a condition "restrained" that is set to last 3 rounds, 
+     * it will last only 2 more rounds after calling this function
+     * 
+     * @returns void
+     */
     decrementConditions() {
         var conditionsNew = [];
         for(var i = 0; i < this.conditions.length; i++) {
@@ -697,9 +904,12 @@ class Creature {
         }
         this.conditions = conditionsNew;
     }
+
     /**
-     * Basically just serves as a undo function for now.
+     * Basically just serves as an undo function for now.
      * A propper undo function will be added at some point, by which this method will be rendered obsolete.
+     * 
+     * @todo replace with "undo" function, once "undo" function is implemented
      */
     incrementConditions() {
         for(var i = 0; i < this.conditions.length; i++) {
@@ -707,10 +917,21 @@ class Creature {
         }
     }
 
+    /**
+     * Generates a string from the creature's JSON formatted conditions. 
+     * 
+     * @returns conditions as string
+     */
     conditionsToString() {
         return ConditionUtils.jsonToString(this.conditions);
     }
 
+    /**
+     * Generates an instance of Creature from a given JSON
+     * 
+     * @param {JSON} json creature in json format
+     * @returns instance of Creature
+     */
     static generateFromJson(json){
         var creature = new Creature(json.name, json.ac, json.hp, json.hpMax, json.initiative);
         creature.setIsPlayer(json.isPlayer);
@@ -719,6 +940,11 @@ class Creature {
         return creature;
     }
 
+    /**
+     * Generates JSON formatted version of the creature
+     * 
+     * @returns Creature as JSON
+     */
     json() {
         return {
             "name": this.name,
