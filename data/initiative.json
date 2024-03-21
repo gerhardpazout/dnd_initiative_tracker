@@ -1,4 +1,5 @@
 {
+    "round": 1,
     "creatures":[
         {
             "name": "Haldir",
@@ -8,7 +9,30 @@
             "isPlayer": true,
             "initiative": 17,
             "current": false,
-            "conditions": ""
+            "conditions": [
+                {
+                    "name": "restrained",
+                    "duration": 3,
+                    "description": "A restrained creature's speed becomes 0, and it can't benefit from any bonus to its speed. Attack rolls against the creature have advantage, and the creature's attack rolls have disadvantage. The creature has disadvantage on Dexterity saving throws.",
+                    "localization": {
+                        "de": {
+                            "name": "gefesselt",
+                            "description": ""
+                        }
+                    }
+                },
+                {
+                    "name": "gold rush",
+                    "duration": null,
+                    "description": "English description",
+                    "localization": {
+                        "de": {
+                            "name": "goldrausch",
+                            "description": "Deutsche Beschreibung"
+                        }
+                    }
+                }
+            ]
         },
         {
             "name": "Ladyium",
@@ -18,7 +42,7 @@
             "isPlayer": true,
             "initiative": 6,
             "current": true,
-            "conditions": ""
+            "conditions": []
         },
         {
             "name": "Bandit",
@@ -28,7 +52,7 @@
             "isPlayer": false,
             "initiative": 15,
             "current": false,
-            "conditions": "restrained"
+            "conditions": []
         }
     ]
 }

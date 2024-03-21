@@ -93,6 +93,19 @@ input[type="checkbox"] {
     margin: 0;
 }
 
+.round-count-wrapper {
+    background-color: var(--creature-list-bg);
+    color: var(--creature-list-color);
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5em;
+}
+
 .creature-list-legend {
     background-color: var(--creature-list-bg);
     color: var(--creature-list-color);
